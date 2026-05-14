@@ -1,127 +1,313 @@
-import { useEffect, useState } from "react";
-import { Plus, Check } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Plus, Check, X, Calendar as CalendarIcon } from "lucide-react";
 import { getAll, put, del, uid, type Todo } from "@/lib/db";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { fireBurst, ParticleLayer } from "./ParticleBurst";
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
+const fmtDate = (d: string) => {
+  const [y, m, day] = d.split("-");
+  return `${y} 年 ${parseInt(m)} 月 ${parseInt(day)} 日`;
+};
 
 export function TodosPage() {
   const [list, setList] = useState<Todo[]>([]);
   const [adding, setAdding] = useState(false);
   const [title, setTitle] = useState("");
-  const [date, setDate] = useState(today());
+  const [details, setDetails] = useState("");
+  const [date, setDate] = useState<Date>(new Date());
+  const [pressedItem, setPressedItem] = useState<string | null>(null);
+  const [pressedGroup, setPressedGroup] = useState<string | null>(null);
 
   const load = async () => {
     const rows = await getAll<Todo>("todos");
-    setList(rows.sort((a, b) => (a.date < b.date ? 1 : -1)));
+    setList(rows);
   };
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
+
+  const fmtDateInput = (d: Date) => {
+    const y = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${y}-${mm}-${dd}`;
+  };
 
   const add = async () => {
     if (!title.trim()) return;
     await put("todos", {
       id: uid(),
       title: title.trim(),
-      date,
+      details: details.trim() || undefined,
+      date: fmtDateInput(date),
       done: false,
       createdAt: Date.now(),
     });
     setTitle("");
+    setDetails("");
+    setDate(new Date());
     setAdding(false);
     load();
   };
 
-  const toggle = async (t: Todo) => {
-    await put("todos", { ...t, done: !t.done });
+  const todayStr = today();
+
+  // 分组：今日在最上，其余按日期降序（仅展示有未完成或当天的组）
+  const groups = useMemo(() => {
+    const map = new Map<string, Todo[]>();
+    for (const t of list) {
+      // 往日只显示未完成 + 当天显示全部
+      if (t.date !== todayStr && t.done) continue;
+      (map.get(t.date) ?? map.set(t.date, []).get(t.date)!).push(t);
+    }
+    // 排序：今日优先，其后按日期降序
+    const keys = Array.from(map.keys()).sort((a, b) => {
+      if (a === todayStr) return -1;
+      if (b === todayStr) return 1;
+      return a < b ? 1 : -1;
+    });
+    // 组内：未完成按 createdAt 升序，已完成按 doneAt 升序（沉底）
+    for (const k of keys) {
+      const arr = map.get(k)!;
+      arr.sort((a, b) => {
+        if (a.done !== b.done) return a.done ? 1 : -1;
+        if (a.done) return (a.doneAt ?? 0) - (b.doneAt ?? 0);
+        return a.createdAt - b.createdAt;
+      });
+    }
+    return keys.map((k) => [k, map.get(k)!] as const);
+  }, [list, todayStr]);
+
+  const toggle = async (t: Todo, ev: React.MouseEvent) => {
+    if (!t.done) {
+      // 计算屏幕坐标百分比
+      const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
+      const x = (rect.left + rect.width / 2) / window.innerWidth;
+      const y = (rect.top + rect.height / 2) / window.innerHeight;
+      fireBurst({ x, y });
+      await put("todos", { ...t, done: true, doneAt: Date.now() });
+
+      // 检查今日是否全部完成 → 全屏烟花
+      const todayItems = list.filter((x) => x.date === todayStr);
+      const willAllDone = todayItems.every((x) => x.id === t.id || x.done);
+      if (t.date === todayStr && willAllDone && todayItems.length > 0) {
+        window.setTimeout(() => {
+          fireBurst({ x: 0.5, y: 0.45, full: true });
+        }, 200);
+      }
+    } else {
+      await put("todos", { ...t, done: false, doneAt: undefined });
+    }
     load();
   };
 
   const remove = async (id: string) => {
     await del("todos", id);
+    setPressedItem(null);
+    load();
+  };
+  const removeGroup = async (d: string) => {
+    const ids = list.filter((t) => t.date === d).map((t) => t.id);
+    for (const id of ids) await del("todos", id);
+    setPressedGroup(null);
     load();
   };
 
-  const groups = list.reduce<Record<string, Todo[]>>((acc, t) => {
-    (acc[t.date] ||= []).push(t);
-    return acc;
-  }, {});
+  const pressTimer = useRef<number | null>(null);
+  const startPress = (cb: () => void) => {
+    pressTimer.current = window.setTimeout(cb, 550) as unknown as number;
+  };
+  const cancelPress = () => {
+    if (pressTimer.current) clearTimeout(pressTimer.current);
+  };
 
   return (
-    <div className="pt-4">
+    <div
+      className="pt-2"
+      onClick={() => {
+        setPressedItem(null);
+        setPressedGroup(null);
+      }}
+    >
+      <ParticleLayer />
       <div className="flex items-center justify-between px-2 pb-3">
         <p className="text-sm text-foreground/60">我的待办</p>
         <button
-          onClick={() => setAdding(true)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setAdding(true);
+          }}
           className="glass flex items-center gap-1 rounded-full px-3 py-1.5 text-sm text-foreground/80"
         >
           <Plus className="h-4 w-4" /> 添加
         </button>
       </div>
 
-      {Object.keys(groups).length === 0 && (
+      {groups.length === 0 && (
         <div className="mt-16 text-center text-foreground/50 text-sm">
           还没有待办，点击右上角「添加」开始
         </div>
       )}
 
-      {Object.entries(groups).map(([d, items]) => (
-        <div key={d} className="mb-5">
-          <div className="px-2 pb-2 text-xs text-foreground/60">{d}</div>
+      {groups.map(([d, items]) => (
+        <div key={d} className="relative mb-5">
+          <div
+            className="px-2 pb-2 text-xs text-foreground/65 select-none"
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              startPress(() => setPressedGroup(d));
+            }}
+            onMouseUp={cancelPress}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+              startPress(() => setPressedGroup(d));
+            }}
+            onTouchEnd={cancelPress}
+          >
+            {d === todayStr ? `今日 ${fmtDate(d)}` : fmtDate(d)}
+          </div>
+          {pressedGroup === d && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                removeGroup(d);
+              }}
+              className="absolute right-2 top-0 grid h-7 w-7 place-items-center rounded-full bg-primary/85 text-primary-foreground shadow"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+
           <div className="space-y-2">
             {items.map((t) => (
-              <div key={t.id} className="glass flex items-center gap-3 rounded-2xl px-4 py-3">
+              <div
+                key={t.id}
+                className={`relative glass flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-300 ${
+                  t.done ? "opacity-55" : ""
+                }`}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  startPress(() => setPressedItem(t.id));
+                }}
+                onMouseUp={cancelPress}
+                onMouseLeave={cancelPress}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  startPress(() => setPressedItem(t.id));
+                }}
+                onTouchEnd={cancelPress}
+              >
                 <button
-                  onClick={() => toggle(t)}
-                  className={`grid h-6 w-6 place-items-center rounded-full border-2 ${
-                    t.done ? "bg-primary border-primary text-primary-foreground" : "border-foreground/30"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggle(t, e);
+                  }}
+                  className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition ${
+                    t.done
+                      ? "bg-primary border-primary text-primary-foreground"
+                      : "border-foreground/30"
                   }`}
                 >
                   {t.done && <Check className="h-4 w-4" />}
                 </button>
-                <span className={`flex-1 ${t.done ? "line-through text-foreground/40" : ""}`}>
-                  {t.title}
-                </span>
-                <button
-                  onClick={() => remove(t.id)}
-                  className="text-xs text-foreground/40 hover:text-destructive"
-                >
-                  删除
-                </button>
+                <div className="flex-1 min-w-0">
+                  <div
+                    className={`truncate ${t.done ? "line-through text-foreground/45" : ""}`}
+                  >
+                    {t.title}
+                  </div>
+                  {t.details && (
+                    <div
+                      className={`truncate text-xs text-foreground/55 ${t.done ? "line-through" : ""}`}
+                    >
+                      {t.details}
+                    </div>
+                  )}
+                </div>
+                {pressedItem === t.id && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      remove(t.id);
+                    }}
+                    className="absolute -right-1 -top-1 grid h-6 w-6 place-items-center rounded-full bg-primary/85 text-primary-foreground shadow"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
             ))}
           </div>
         </div>
       ))}
 
+      {/* 1/5 屏弹窗 */}
       {adding && (
         <div
-          className="fixed inset-0 z-30 grid place-items-center bg-black/30 px-6"
+          className="fixed inset-0 z-30 flex items-end justify-center bg-black/35 px-4 pb-16"
           onClick={() => setAdding(false)}
         >
           <div
-            className="w-full max-w-sm rounded-3xl bg-white p-5 shadow-xl"
+            className="w-full max-w-sm rounded-3xl bg-background shadow-2xl p-4"
+            style={{ height: "20vh", minHeight: 180 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="mb-3 text-lg font-medium">新增待办</h3>
             <input
               autoFocus
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="待办内容"
-              className="w-full rounded-xl border border-border bg-input px-4 py-3 outline-none focus:ring-2 focus:ring-ring"
+              placeholder="任务名"
+              className="w-full bg-transparent px-1 py-1 text-base font-medium outline-none"
             />
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="mt-3 w-full rounded-xl border border-border bg-input px-4 py-3 outline-none focus:ring-2 focus:ring-ring"
+            <div className="my-2 h-px bg-border" />
+            <textarea
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              placeholder="详细内容（可选）"
+              rows={2}
+              className="w-full resize-none bg-transparent px-1 text-sm text-foreground/75 outline-none"
             />
-            <div className="mt-4 flex justify-end gap-2">
-              <button onClick={() => setAdding(false)} className="rounded-xl px-4 py-2 text-foreground/70">
-                取消
-              </button>
-              <button onClick={add} className="rounded-xl bg-primary px-4 py-2 text-primary-foreground">
-                保存
-              </button>
+            <div className="mt-1 flex items-center justify-between">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="flex items-center gap-1 rounded-full bg-muted/70 px-3 py-1 text-xs text-foreground/70">
+                    <CalendarIcon className="h-3.5 w-3.5" />
+                    {fmtDateInput(date)}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(d) => d && setDate(d)}
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setAdding(false)}
+                  className="rounded-full px-3 py-1 text-sm text-foreground/65"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={add}
+                  className="rounded-full bg-primary px-4 py-1 text-sm text-primary-foreground"
+                >
+                  保存
+                </button>
+              </div>
             </div>
           </div>
         </div>
