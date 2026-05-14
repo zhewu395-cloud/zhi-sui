@@ -20,16 +20,25 @@ export type TimeEntry = {
 export type Todo = {
   id: string;
   title: string;
+  details?: string;
   date: string; // YYYY-MM-DD
   done: boolean;
+  doneAt?: number;
   createdAt: number;
 };
 
+export type ReviewCategory = "pending" | "sundry" | "day" | "week" | "month";
+
 export type Review = {
   id: string;
-  type: "day" | "week" | "month";
-  date: string; // anchor date YYYY-MM-DD
+  // 旧字段兼容
+  type?: "day" | "week" | "month";
+  category: ReviewCategory;
+  title?: string;
+  date: string; // YYYY-MM-DD
   content: string;
+  links?: string[]; // 双向链接：其他 review.id
+  updatedAt?: number;
   createdAt: number;
 };
 
