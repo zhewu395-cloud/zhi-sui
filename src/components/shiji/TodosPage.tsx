@@ -159,97 +159,117 @@ export function TodosPage() {
         </div>
       )}
 
-      {groups.map(([d, items]) => (
-        <div key={d} className="relative mb-5">
+      {groups.map(([d, items]) => {
+        const isToday = d === todayStr;
+        return (
           <div
-            className="px-2 pb-2 text-xs text-foreground/65 select-none"
-            onMouseDown={(e) => {
-              e.stopPropagation();
-              startPress(() => setPressedGroup(d));
+            key={d}
+            className="relative mb-4 rounded-3xl px-3 py-3 border"
+            style={{
+              background: isToday
+                ? "linear-gradient(180deg, oklch(0.97 0.035 145 / 0.55), oklch(0.99 0.012 95 / 0.45))"
+                : "linear-gradient(180deg, oklch(0.985 0.012 90 / 0.55), oklch(0.97 0.018 130 / 0.30))",
+              borderColor: isToday
+                ? "oklch(0.80 0.04 145 / 0.30)"
+                : "oklch(0.85 0.02 110 / 0.22)",
+              boxShadow: "0 6px 22px -18px oklch(0.55 0.06 130 / 0.35)",
             }}
-            onMouseUp={cancelPress}
-            onTouchStart={(e) => {
-              e.stopPropagation();
-              startPress(() => setPressedGroup(d));
-            }}
-            onTouchEnd={cancelPress}
           >
-            {d === todayStr ? `今日 ${fmtDate(d)}` : fmtDate(d)}
-          </div>
-          {pressedGroup === d && (
-            <button
-              onClick={(e) => {
+            <div
+              className="px-1 pb-2 text-xs text-foreground/65 select-none flex items-center gap-2"
+              onMouseDown={(e) => {
                 e.stopPropagation();
-                removeGroup(d);
+                startPress(() => setPressedGroup(d));
               }}
-              className="absolute right-2 top-0 grid h-7 w-7 place-items-center rounded-full bg-primary/85 text-primary-foreground shadow"
+              onMouseUp={cancelPress}
+              onTouchStart={(e) => {
+                e.stopPropagation();
+                startPress(() => setPressedGroup(d));
+              }}
+              onTouchEnd={cancelPress}
             >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-
-          <div className="space-y-2">
-            {items.map((t) => (
-              <div
-                key={t.id}
-                className={`relative glass flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-300 ${
-                  t.done ? "opacity-55" : ""
-                }`}
-                onMouseDown={(e) => {
+              {isToday && (
+                <span className="rounded-full bg-primary/60 px-2 py-0.5 text-[10px] text-primary-foreground">
+                  今日
+                </span>
+              )}
+              <span>{fmtDate(d)}</span>
+            </div>
+            {pressedGroup === d && (
+              <button
+                onClick={(e) => {
                   e.stopPropagation();
-                  startPress(() => setPressedItem(t.id));
+                  removeGroup(d);
                 }}
-                onMouseUp={cancelPress}
-                onMouseLeave={cancelPress}
-                onTouchStart={(e) => {
-                  e.stopPropagation();
-                  startPress(() => setPressedItem(t.id));
-                }}
-                onTouchEnd={cancelPress}
+                className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-primary/85 text-primary-foreground shadow"
               >
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggle(t, e);
-                  }}
-                  className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition ${
-                    t.done
-                      ? "bg-primary border-primary text-primary-foreground"
-                      : "border-foreground/30"
+                <X className="h-4 w-4" />
+              </button>
+            )}
+
+            <div className="space-y-2">
+              {items.map((t) => (
+                <div
+                  key={t.id}
+                  className={`relative glass flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-300 ${
+                    t.done ? "opacity-55" : ""
                   }`}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    startPress(() => setPressedItem(t.id));
+                  }}
+                  onMouseUp={cancelPress}
+                  onMouseLeave={cancelPress}
+                  onTouchStart={(e) => {
+                    e.stopPropagation();
+                    startPress(() => setPressedItem(t.id));
+                  }}
+                  onTouchEnd={cancelPress}
                 >
-                  {t.done && <Check className="h-4 w-4" />}
-                </button>
-                <div className="flex-1 min-w-0">
-                  <div
-                    className={`truncate ${t.done ? "line-through text-foreground/45" : ""}`}
-                  >
-                    {t.title}
-                  </div>
-                  {t.details && (
-                    <div
-                      className={`truncate text-xs text-foreground/55 ${t.done ? "line-through" : ""}`}
-                    >
-                      {t.details}
-                    </div>
-                  )}
-                </div>
-                {pressedItem === t.id && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      remove(t.id);
+                      toggle(t, e);
                     }}
-                    className="absolute -right-1 -top-1 grid h-6 w-6 place-items-center rounded-full bg-primary/85 text-primary-foreground shadow"
+                    className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition ${
+                      t.done
+                        ? "bg-primary border-primary text-primary-foreground"
+                        : "border-foreground/30"
+                    }`}
                   >
-                    <X className="h-3.5 w-3.5" />
+                    {t.done && <Check className="h-4 w-4" />}
                   </button>
-                )}
-              </div>
-            ))}
+                  <div className="flex-1 min-w-0">
+                    <div
+                      className={`truncate ${t.done ? "line-through text-foreground/45" : ""}`}
+                    >
+                      {t.title}
+                    </div>
+                    {t.details && (
+                      <div
+                        className={`truncate text-xs text-foreground/55 ${t.done ? "line-through" : ""}`}
+                      >
+                        {t.details}
+                      </div>
+                    )}
+                  </div>
+                  {pressedItem === t.id && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        remove(t.id);
+                      }}
+                      className="absolute -right-1 -top-1 grid h-6 w-6 place-items-center rounded-full bg-primary/85 text-primary-foreground shadow"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {/* 1/5 屏弹窗 */}
       {adding && (
