@@ -149,53 +149,41 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
               className="w-full rounded-xl border border-border bg-input px-4 py-3 outline-none focus:ring-2 focus:ring-ring"
             />
 
-            {/* 调色盘 */}
+            {/* 标准全色调色盘 */}
             <div className="mt-4 space-y-3">
               <div className="flex items-center gap-3">
-                <div
-                  className="h-12 w-12 rounded-full shadow-inner border border-border"
+                <label
+                  className="h-12 w-12 rounded-full shadow-inner border border-border overflow-hidden cursor-pointer"
                   style={{ background: currentColor }}
-                />
-                <div className="text-xs text-foreground/60">预览颜色</div>
+                >
+                  <input
+                    type="color"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    className="opacity-0 w-full h-full cursor-pointer"
+                  />
+                </label>
+                <div className="flex-1">
+                  <div className="text-xs text-foreground/60 mb-1">点击圆形从全色谱中选取</div>
+                  <div className="text-[11px] text-foreground/50 tabular-nums">{color.toUpperCase()}</div>
+                </div>
               </div>
 
-              <label className="block text-xs text-foreground/60">
-                色调 (Hue) {hue}°
-                <input
-                  type="range"
-                  min={0}
-                  max={360}
-                  value={hue}
-                  onChange={(e) => setHue(+e.target.value)}
-                  className="mt-1 w-full accent-primary"
-                />
-              </label>
-
-              <label className="block text-xs text-foreground/60">
-                饱和度 {chroma.toFixed(3)}
-                <input
-                  type="range"
-                  min={0}
-                  max={0.18}
-                  step={0.005}
-                  value={chroma}
-                  onChange={(e) => setChroma(+e.target.value)}
-                  className="mt-1 w-full accent-primary"
-                />
-              </label>
-
-              <label className="block text-xs text-foreground/60">
-                明度 / 色温 {light.toFixed(2)}
-                <input
-                  type="range"
-                  min={0.55}
-                  max={0.95}
-                  step={0.01}
-                  value={light}
-                  onChange={(e) => setLight(+e.target.value)}
-                  className="mt-1 w-full accent-primary"
-                />
-              </label>
+              <div className="grid grid-cols-8 gap-1.5">
+                {PRESET_SWATCHES.map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => setColor(c)}
+                    className={`h-7 w-7 rounded-full border ${
+                      color.toLowerCase() === c.toLowerCase()
+                        ? "ring-2 ring-foreground/60"
+                        : "border-border"
+                    }`}
+                    style={{ background: c }}
+                    aria-label={c}
+                  />
+                ))}
+              </div>
             </div>
 
             <div className="mt-4 flex justify-end gap-2">
