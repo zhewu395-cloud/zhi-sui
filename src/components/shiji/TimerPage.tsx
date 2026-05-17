@@ -91,7 +91,7 @@ export function TimerPage({
 
   return (
     <div className="flex flex-col items-center pt-2">
-      <div className="w-full sticky top-0 z-10">
+      <div className="w-full">
         <LeafBack onClick={onDone} />
       </div>
 
