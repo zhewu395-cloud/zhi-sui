@@ -28,6 +28,29 @@ function hslToHex(h: number, s: number, l: number) {
   return `#${f(0)}${f(8)}${f(4)}`;
 }
 
+function SliderRow({
+  label, value, min, max, onChange, trackBg,
+}: {
+  label: string; value: number; min: number; max: number;
+  onChange: (v: number) => void; trackBg: string;
+}) {
+  return (
+    <div>
+      <div className="flex justify-between text-[11px] text-foreground/55 mb-1">
+        <span>{label}</span><span className="tabular-nums">{value}</span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full h-3 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-foreground/30 [&::-webkit-slider-thumb]:shadow"
+        style={{ background: trackBg }}
+      />
+    </div>
+  );
+
 export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
   const [list, setList] = useState<Activity[]>([]);
   const [adding, setAdding] = useState(false);
