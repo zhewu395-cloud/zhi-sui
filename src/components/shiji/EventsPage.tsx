@@ -3,17 +3,19 @@ import { Plus, X } from "lucide-react";
 import { getAll, put, del, uid, type Activity } from "@/lib/db";
 
 const DEFAULT: Activity[] = [
-  { id: "a-class", name: "上课", color: "oklch(0.82 0.06 148)", createdAt: 0 },
-  { id: "a-write", name: "文案", color: "oklch(0.85 0.05 130)", createdAt: 0 },
-  { id: "a-walk", name: "走路", color: "oklch(0.83 0.06 165)", createdAt: 0 },
-  { id: "a-read", name: "阅读", color: "oklch(0.86 0.05 110)", createdAt: 0 },
+  { id: "a-class", name: "上课", color: "#bfe3c6", createdAt: 0 },
+  { id: "a-write", name: "文案", color: "#d6e7b8", createdAt: 0 },
+  { id: "a-walk", name: "走路", color: "#c6e3d4", createdAt: 0 },
+  { id: "a-read", name: "阅读", color: "#e7dcb8", createdAt: 0 },
 ];
 
-const DEFAULT_COLOR = "oklch(0.82 0.06 148)";
+const DEFAULT_COLOR = "#bfe3c6";
 
-function buildOklch(l: number, c: number, h: number) {
-  return `oklch(${l.toFixed(2)} ${c.toFixed(3)} ${h.toFixed(0)})`;
-}
+const PRESET_SWATCHES = [
+  "#f4a8a8", "#f6c177", "#f5e29a", "#c9e29a", "#a3dca8",
+  "#9ad6c1", "#a8d8f0", "#a8b8ee", "#c9a8ee", "#eba8d8",
+  "#e8d4b0", "#b9a890", "#d8d8d8", "#7a7a7a", "#2d2d2d",
+];
 
 export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
   const [list, setList] = useState<Activity[]>([]);
