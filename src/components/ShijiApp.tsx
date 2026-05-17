@@ -70,7 +70,7 @@ export function ShijiApp() {
       </main>
 
       {!inTimer && (
-        <nav className="absolute bottom-0 left-0 right-0 z-20 glass border-t border-white/40 px-2 pt-2 pb-6">
+        <nav className="absolute bottom-0 left-0 right-0 z-20 px-2 pt-2 pb-6 bg-[oklch(0.995_0.006_95/0.55)] backdrop-blur-xl border-t border-white/30">
           <div className="grid grid-cols-4 gap-1">
             {(
               [
@@ -83,10 +83,10 @@ export function ShijiApp() {
               <button
                 key={k}
                 onClick={() => setTab(k)}
-                className={`rounded-xl py-2 text-base transition ${
+                className={`py-2 text-base bg-transparent transition-colors ${
                   tab === k
-                    ? "bg-primary text-primary-foreground font-medium"
-                    : "text-foreground/70 hover:bg-white/40"
+                    ? "text-[oklch(0.55_0.12_148)] font-semibold"
+                    : "text-foreground/45"
                 }`}
               >
                 {label}
