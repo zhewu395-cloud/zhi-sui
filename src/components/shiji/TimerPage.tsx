@@ -95,8 +95,16 @@ export function TimerPage({
         <LeafBack onClick={onDone} />
       </div>
 
-      {/* 整块容器：大圆 + 事件名 + 开始/结束 —— 作为一个整体上下滚动，间距像素级锁定 */}
-      <div className="flex flex-col items-center gap-7 mt-6">
+      {/* 整块容器：大圆 + 事件名 + 开始/结束 —— 作为整体上下滚动，间距像素级锁定 */}
+      <div
+        className="mt-6 w-full rounded-[36px] py-10 px-4 flex flex-col items-center gap-7"
+        style={{
+          background:
+            "linear-gradient(180deg, oklch(0.97 0.035 142 / 0.55) 0%, oklch(0.985 0.020 120 / 0.40) 100%)",
+          border: "1px solid oklch(0.85 0.035 138 / 0.30)",
+          boxShadow: "0 10px 30px -24px oklch(0.50 0.06 135 / 0.35)",
+        }}
+      >
         <button
           onClick={toggle}
           className="grid h-72 w-72 place-items-center rounded-full glass breathe-slow active:scale-[0.98] transition"
