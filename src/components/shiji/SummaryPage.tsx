@@ -272,13 +272,13 @@ export function SummaryPage() {
                     }))}
                     margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
                   >
-                    <CartesianGrid stroke="oklch(0.5 0.1 148 / 0.15)" />
+                    <CartesianGrid stroke="oklch(0.45 0.055 135 / 0.14)" />
                     <XAxis
                       dataKey="name"
-                      tick={{ fontSize: 11, fill: "oklch(0.35 0.06 148)" }}
+                      tick={{ fontSize: 11, fill: "oklch(0.34 0.035 140)" }}
                     />
                     <YAxis
-                      tick={{ fontSize: 11, fill: "oklch(0.35 0.06 148)" }}
+                      tick={{ fontSize: 11, fill: "oklch(0.34 0.035 140)" }}
                       label={{
                         value: "分钟",
                         angle: -90,
@@ -290,9 +290,9 @@ export function SummaryPage() {
                     <Line
                       type="monotone"
                       dataKey="minutes"
-                      stroke="oklch(0.5 0.14 148)"
+                      stroke="oklch(0.48 0.085 140)"
                       strokeWidth={2}
-                      dot={{ r: 5, fill: "oklch(0.55 0.14 148)" }}
+                      dot={{ r: 5, fill: "oklch(0.56 0.085 134)" }}
                       activeDot={{ r: 7 }}
                     />
                   </LineChart>
@@ -304,7 +304,7 @@ export function SummaryPage() {
                       key={m.name}
                       className="rounded-2xl px-3 py-3 text-sm"
                       style={{
-                        background: `color-mix(in oklab, ${GREENS[i % GREENS.length]} 22%, oklch(0.98 0.018 105))`,
+                        background: `color-mix(in oklab, ${GREENS[i % GREENS.length]} 14%, oklch(0.992 0.007 90))`,
                       }}
                     >
                       <div className="font-medium text-foreground/85 truncate">
