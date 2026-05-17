@@ -70,7 +70,14 @@ export function ShijiApp() {
       </main>
 
       {!inTimer && (
-        <nav className="absolute bottom-0 left-0 right-0 z-20 px-2 pt-2 pb-6 bg-[oklch(0.995_0.006_95/0.55)] backdrop-blur-xl border-t border-white/30">
+        <nav
+          className="absolute bottom-0 left-0 right-0 z-20 px-2 pt-2 pb-6 border-t border-white/50"
+          style={{
+            backgroundColor: "#FFFDF9",
+            backgroundImage:
+              "linear-gradient(180deg, oklch(0.96 0.045 138 / 0.55) 0%, oklch(0.985 0.020 110 / 0.35) 38%, #FFFDF9 100%)",
+          }}
+        >
           <div className="grid grid-cols-4 gap-1">
             {(
               [
