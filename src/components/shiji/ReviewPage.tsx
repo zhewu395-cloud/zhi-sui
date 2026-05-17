@@ -12,10 +12,6 @@ const ymd = (d: Date) => {
 
 const stripHtml = (s: string) => s.replace(/<[^>]+>/g, "").trim();
 
-const CAT_BUCKETS: { key: ReviewCategory; label: string }[] = [
-  { key: "sundry", label: "琐碎记" },
-  { key: "day", label: "日复盘" },
-];
 
 export function ReviewPage() {
   const [list, setList] = useState<Review[]>([]);
