@@ -33,7 +33,10 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
   
-  const [color, setColor] = useState<string>("#a3dca8");
+  const [color, setColor] = useState<string>("#BFE3C6");
+  const [hue, setHue] = useState(140);
+  const [sat, setSat] = useState(50);
+  const [light, setLight] = useState(75);
   const [longPressed, setLongPressed] = useState<string | null>(null);
 
   const load = async () => {
