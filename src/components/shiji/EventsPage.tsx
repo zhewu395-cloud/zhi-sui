@@ -88,11 +88,11 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
       <p className="px-2 pb-4 text-sm text-foreground/60">选择一项活动开始记录</p>
 
       {/* 2 列对称椭圆按钮 —— 宽度 80%，高度拉长 */}
-      <div className="grid grid-cols-2 gap-4 px-4">
+      <div className="grid grid-cols-2 gap-3 px-2">
         {list.map((a, i) => {
           const color = a.color ?? DEFAULT_COLOR;
           return (
-            <div key={a.id} className="relative mx-auto w-[80%]">
+            <div key={a.id} className="relative mx-auto w-[94%]">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
