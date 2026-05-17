@@ -90,8 +90,10 @@ export function TodosPage() {
 
   const toggle = async (t: Todo, ev: React.MouseEvent) => {
     if (!t.done) {
-      // 计算屏幕坐标百分比
-      const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
+      // 以任务条整体的几何中心为发射源
+      const row = (ev.currentTarget as HTMLElement).closest<HTMLElement>("[data-todo-row]");
+      const target = row ?? (ev.currentTarget as HTMLElement);
+      const rect = target.getBoundingClientRect();
       const x = (rect.left + rect.width / 2) / window.innerWidth;
       const y = (rect.top + rect.height / 2) / window.innerHeight;
       fireBurst({ x, y });
@@ -159,125 +161,160 @@ export function TodosPage() {
         </div>
       )}
 
-      {groups.map(([d, items]) => (
-        <div key={d} className="relative mb-5">
+      {groups.map(([d, items]) => {
+        const isToday = d === todayStr;
+        return (
           <div
-            className="px-2 pb-2 text-xs text-foreground/65 select-none"
-            onMouseDown={(e) => {
-              e.stopPropagation();
-              startPress(() => setPressedGroup(d));
+            key={d}
+            className="relative mb-4 rounded-3xl px-3 py-3 border"
+            style={{
+              background: isToday
+                ? "linear-gradient(180deg, oklch(0.97 0.035 145 / 0.55), oklch(0.99 0.012 95 / 0.45))"
+                : "linear-gradient(180deg, oklch(0.985 0.012 90 / 0.55), oklch(0.97 0.018 130 / 0.30))",
+              borderColor: isToday
+                ? "oklch(0.80 0.04 145 / 0.30)"
+                : "oklch(0.85 0.02 110 / 0.22)",
+              boxShadow: "0 6px 22px -18px oklch(0.55 0.06 130 / 0.35)",
             }}
-            onMouseUp={cancelPress}
-            onTouchStart={(e) => {
-              e.stopPropagation();
-              startPress(() => setPressedGroup(d));
-            }}
-            onTouchEnd={cancelPress}
           >
-            {d === todayStr ? `今日 ${fmtDate(d)}` : fmtDate(d)}
-          </div>
-          {pressedGroup === d && (
-            <button
-              onClick={(e) => {
+            <div
+              className="px-1 pb-2 text-xs text-foreground/65 select-none flex items-center gap-2"
+              onMouseDown={(e) => {
                 e.stopPropagation();
-                removeGroup(d);
+                startPress(() => setPressedGroup(d));
               }}
-              className="absolute right-2 top-0 grid h-7 w-7 place-items-center rounded-full bg-primary/85 text-primary-foreground shadow"
+              onMouseUp={cancelPress}
+              onTouchStart={(e) => {
+                e.stopPropagation();
+                startPress(() => setPressedGroup(d));
+              }}
+              onTouchEnd={cancelPress}
             >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-
-          <div className="space-y-2">
-            {items.map((t) => (
-              <div
-                key={t.id}
-                className={`relative glass flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-300 ${
-                  t.done ? "opacity-55" : ""
-                }`}
-                onMouseDown={(e) => {
+              {isToday && (
+                <span className="rounded-full bg-primary/60 px-2 py-0.5 text-[10px] text-primary-foreground">
+                  今日
+                </span>
+              )}
+              <span>{fmtDate(d)}</span>
+            </div>
+            {pressedGroup === d && (
+              <button
+                onClick={(e) => {
                   e.stopPropagation();
-                  startPress(() => setPressedItem(t.id));
+                  removeGroup(d);
                 }}
-                onMouseUp={cancelPress}
-                onMouseLeave={cancelPress}
-                onTouchStart={(e) => {
-                  e.stopPropagation();
-                  startPress(() => setPressedItem(t.id));
-                }}
-                onTouchEnd={cancelPress}
+                className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-primary/85 text-primary-foreground shadow"
               >
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggle(t, e);
-                  }}
-                  className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition ${
-                    t.done
-                      ? "bg-primary border-primary text-primary-foreground"
-                      : "border-foreground/30"
+                <X className="h-4 w-4" />
+              </button>
+            )}
+
+            <div className="space-y-2">
+              {items.map((t) => (
+                <div
+                  key={t.id}
+                  data-todo-row
+                  className={`relative glass flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-300 ${
+                    t.done ? "opacity-55" : ""
                   }`}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    startPress(() => setPressedItem(t.id));
+                  }}
+                  onMouseUp={cancelPress}
+                  onMouseLeave={cancelPress}
+                  onTouchStart={(e) => {
+                    e.stopPropagation();
+                    startPress(() => setPressedItem(t.id));
+                  }}
+                  onTouchEnd={cancelPress}
                 >
-                  {t.done && <Check className="h-4 w-4" />}
-                </button>
-                <div className="flex-1 min-w-0">
-                  <div
-                    className={`truncate ${t.done ? "line-through text-foreground/45" : ""}`}
-                  >
-                    {t.title}
-                  </div>
-                  {t.details && (
-                    <div
-                      className={`truncate text-xs text-foreground/55 ${t.done ? "line-through" : ""}`}
-                    >
-                      {t.details}
-                    </div>
-                  )}
-                </div>
-                {pressedItem === t.id && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      remove(t.id);
+                      toggle(t, e);
                     }}
-                    className="absolute -right-1 -top-1 grid h-6 w-6 place-items-center rounded-full bg-primary/85 text-primary-foreground shadow"
+                    className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition ${
+                      t.done
+                        ? "bg-primary border-primary text-primary-foreground"
+                        : "border-foreground/30"
+                    }`}
                   >
-                    <X className="h-3.5 w-3.5" />
+                    {t.done && <Check className="h-4 w-4" />}
                   </button>
-                )}
-              </div>
-            ))}
+                  <div className="flex-1 min-w-0">
+                    <div
+                      className={`truncate ${t.done ? "line-through text-foreground/45" : ""}`}
+                    >
+                      {t.title}
+                    </div>
+                    {t.details && (
+                      <div
+                        className={`truncate text-xs text-foreground/55 ${t.done ? "line-through" : ""}`}
+                      >
+                        {t.details}
+                      </div>
+                    )}
+                  </div>
+                  {pressedItem === t.id && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        remove(t.id);
+                      }}
+                      className="absolute -right-1 -top-1 grid h-6 w-6 place-items-center rounded-full bg-primary/85 text-primary-foreground shadow"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
-      {/* 1/5 屏弹窗 */}
+      {/* 视觉中心：屏幕上方 38%，高度随内容自适应 */}
       {adding && (
         <div
-          className="fixed inset-0 z-30 flex items-end justify-center bg-black/35 px-4 pb-16"
+          className="fixed inset-0 z-30 bg-black/35 px-4"
           onClick={() => setAdding(false)}
         >
           <div
-            className="w-full max-w-sm rounded-3xl bg-background shadow-2xl p-4"
-            style={{ height: "20vh", minHeight: 180 }}
+            className="absolute left-1/2 -translate-x-1/2 w-[92%] max-w-sm rounded-[28px] bg-background shadow-2xl flex flex-col overflow-hidden animate-scale-in"
+            style={{ top: "30%" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <input
-              autoFocus
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="任务名"
-              className="w-full bg-transparent px-1 py-1 text-base font-medium outline-none"
-            />
-            <div className="my-2 h-px bg-border" />
-            <textarea
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-              placeholder="详细内容（可选）"
-              rows={2}
-              className="w-full resize-none bg-transparent px-1 text-sm text-foreground/75 outline-none"
-            />
-            <div className="mt-1 flex items-center justify-between">
+            {/* 顶部：任务名 —— 固定不被挤压 */}
+            <div className="px-5 pt-4 pb-2 shrink-0">
+              <input
+                autoFocus
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="任务名"
+                className="w-full bg-transparent text-base font-medium outline-none"
+              />
+            </div>
+            {/* 分割线 —— 固定不被挤压 */}
+            <div className="mx-5 h-px bg-border shrink-0" />
+            {/* 中部：详情 —— 自动延伸 */}
+            <div className="px-5 pt-2 pb-1">
+              <textarea
+                value={details}
+                onChange={(e) => {
+                  setDetails(e.target.value);
+                  const ta = e.currentTarget;
+                  ta.style.height = "auto";
+                  ta.style.height = Math.min(ta.scrollHeight, 280) + "px";
+                }}
+                placeholder="详细内容（可选）"
+                rows={2}
+                className="block w-full resize-none bg-transparent text-sm text-foreground/75 outline-none min-h-[48px]"
+                style={{ maxHeight: 280 }}
+              />
+            </div>
+            {/* 底部：日期 + 操作 —— 固定 */}
+            <div className="px-5 pb-4 pt-1 flex items-center justify-between shrink-0">
               <Popover>
                 <PopoverTrigger asChild>
                   <button className="flex items-center gap-1 rounded-full bg-muted/70 px-3 py-1 text-xs text-foreground/70">
