@@ -95,29 +95,28 @@ export function TimerPage({
         <LeafBack onClick={onDone} />
       </div>
 
-      {/* 大圆 —— sticky 跟随滚动，浮在最上层 */}
-      <div className="sticky top-2 z-40 mt-6 mb-2">
+      {/* 整块容器：大圆 + 事件名 + 开始/结束 —— 作为一个整体上下滚动，间距像素级锁定 */}
+      <div className="flex flex-col items-center gap-7 mt-6">
         <button
           onClick={toggle}
-          className="grid h-72 w-72 place-items-center rounded-full glass breathe-slow shadow-2xl active:scale-95 transition mx-auto"
+          className="grid h-72 w-72 place-items-center rounded-full glass breathe-slow active:scale-[0.98] transition"
         >
           <div className="text-5xl font-light tabular-nums text-foreground/85">
             {fmt(elapsed)}
           </div>
         </button>
-      </div>
 
-      {/* 事件名 —— 2倍字号 */}
-      <div className="mt-4 text-3xl font-medium text-foreground/85 tracking-wider">
-        {activity?.name ?? "未指定"}
-      </div>
+        <div className="text-3xl font-medium text-foreground/85 tracking-wider">
+          {activity?.name ?? "未指定"}
+        </div>
 
-      <button
-        onClick={toggle}
-        className="mt-10 rounded-full bg-primary text-primary-foreground px-12 py-3 text-base shadow-lg active:scale-95 transition"
-      >
-        {running ? "结束" : "开始"}
-      </button>
+        <button
+          onClick={toggle}
+          className="rounded-full bg-primary text-primary-foreground px-14 py-3 text-base shadow-[0_8px_24px_-12px_oklch(0.55_0.08_148/0.4)] active:scale-95 transition"
+        >
+          {running ? "结束" : "开始"}
+        </button>
+      </div>
 
       {recent.length > 0 && (
         <div className="mt-10 w-full max-w-sm">

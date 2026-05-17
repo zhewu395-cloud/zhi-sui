@@ -41,7 +41,7 @@ export function ShijiApp() {
         backgroundPosition: "center",
       }}
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.98_0.02_105/0.25)] via-[oklch(0.96_0.03_120/0.35)] to-[oklch(0.94_0.04_140/0.55)] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.99_0.005_100/0.55)] via-[oklch(0.98_0.012_120/0.35)] to-[oklch(0.96_0.025_140/0.30)] pointer-events-none" />
 
       <header className="relative z-10 flex items-center justify-between px-5 pt-12 pb-3">
         <h1 className="text-3xl font-semibold tracking-[0.15em] text-foreground/90 drop-shadow-sm">
