@@ -98,11 +98,41 @@ export function SummaryPage() {
   const top3 = merged.slice(0, 3);
   const last1 = merged.length > 0 ? merged[merged.length - 1] : null;
 
+  const rangeLabel =
+    range === "day"
+      ? ymd(date)
+      : range === "week"
+      ? `${ymd(date)} 所在周`
+      : `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+
   return (
-    <div className="pt-2 space-y-6">
+    <div className="pt-2 space-y-5">
+      {/* 维度切换 */}
+      <div className="glass flex rounded-full p-1">
+        {(
+          [
+            ["day", "日总结"],
+            ["week", "周总结"],
+            ["month", "月总结"],
+          ] as [Range, string][]
+        ).map(([k, l]) => (
+          <button
+            key={k}
+            onClick={() => setRange(k)}
+            className={`flex-1 rounded-full py-1.5 text-sm transition ${
+              range === k
+                ? "bg-primary text-primary-foreground font-medium"
+                : "text-foreground/65"
+            }`}
+          >
+            {l}
+          </button>
+        ))}
+      </div>
+
       {/* 日期筛选 */}
       <div className="flex items-center justify-between px-1">
-        <div className="text-sm text-foreground/70">{ymd(date)}</div>
+        <div className="text-sm text-foreground/70">{rangeLabel}</div>
         <Popover>
           <PopoverTrigger asChild>
             <button className="glass flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-foreground/80">
@@ -123,7 +153,7 @@ export function SummaryPage() {
 
       {merged.length === 0 ? (
         <div className="mt-20 text-center text-foreground/50 text-sm">
-          这一天还没有记录
+          这段时间还没有记录
         </div>
       ) : (
         <>
