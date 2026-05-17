@@ -63,37 +63,48 @@
   letter-spacing: 0 !important;
 }
 
-/* 全局隐藏滚动条 */
-*::-webkit-scrollbar { width: 0; height: 0; display: none; }
-* { scrollbar-width: none; -ms-overflow-style: none; }
+/* 全局隐藏滚动条 —— 任何元素 */
+html, body, * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar { width: 0 !important; height: 0 !important; display: none !important; background: transparent !important; }
+*::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-track { display: none !important; background: transparent !important; }
 
 @layer base {
   * { border-color: var(--color-border); }
   html, body, #root { height: 100%; }
   body {
     color: var(--color-foreground);
-    /* 全局楷体 */
+    background: var(--color-background);
     font-family: "Kaiti SC", "STKaiti", "Kaiti", "楷体", "BiauKai", "DFKai-SB", Kai, serif;
     letter-spacing: 0.02em;
   }
 }
 
-/* 玻璃拟态 —— 玉绿白调和 */
+/* 玻璃拟态 —— 奶白主导，朦胧绿仅作雾边 */
 .glass {
-  background: color-mix(in oklab, oklch(0.985 0.014 115) 60%, transparent);
-  backdrop-filter: blur(18px) saturate(1.05);
-  -webkit-backdrop-filter: blur(18px) saturate(1.05);
-  border: 1px solid color-mix(in oklab, oklch(0.74 0.07 148) 35%, transparent);
-  box-shadow: 0 6px 24px -12px color-mix(in oklab, oklch(0.60 0.08 148) 28%, transparent);
+  background:
+    radial-gradient(120% 120% at 0% 0%, color-mix(in oklab, oklch(0.92 0.05 148) 14%, transparent) 0%, transparent 55%),
+    color-mix(in oklab, oklch(0.995 0.004 100) 78%, transparent);
+  backdrop-filter: blur(22px) saturate(1.05);
+  -webkit-backdrop-filter: blur(22px) saturate(1.05);
+  border: 1px solid color-mix(in oklab, oklch(0.80 0.04 148) 22%, transparent);
+  box-shadow:
+    0 1px 0 0 oklch(1 0 0 / 0.6) inset,
+    0 8px 28px -16px color-mix(in oklab, oklch(0.55 0.08 148) 22%, transparent);
 }
 
-/* 呼吸动效 */
+/* 呼吸动效 —— 像云端微浮 */
 @keyframes breathe {
-  0%, 100% { transform: scale(1); box-shadow: 0 4px 18px -8px color-mix(in oklab, oklch(0.52 0.13 148) 25%, transparent); }
-  50%      { transform: scale(1.035); box-shadow: 0 8px 26px -8px color-mix(in oklab, oklch(0.52 0.13 148) 40%, transparent); }
+  0%, 100% { transform: scale(1); box-shadow: 0 6px 22px -14px color-mix(in oklab, oklch(0.55 0.08 148) 22%, transparent); }
+  50%      { transform: scale(1.015); box-shadow: 0 12px 30px -16px color-mix(in oklab, oklch(0.55 0.08 148) 32%, transparent); }
 }
-.breathe { animation: breathe 3.6s ease-in-out infinite; }
-.breathe-slow { animation: breathe 5s ease-in-out infinite; }
+.breathe { animation: breathe 4.2s ease-in-out infinite; }
+.breathe-slow { animation: breathe 6s ease-in-out infinite; }
 
 /* 复盘下划线 */
 .leaf-underline {
