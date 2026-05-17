@@ -21,7 +21,7 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
   const [list, setList] = useState<Activity[]>([]);
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
-  const [hue, setHue] = useState(148);    // 色调
+  
   const [color, setColor] = useState<string>("#a3dca8");
   const [longPressed, setLongPressed] = useState<string | null>(null);
 
