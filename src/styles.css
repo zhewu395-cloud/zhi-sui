@@ -35,26 +35,32 @@
 
 :root {
   --radius: 1rem;
-  /* 米白与玉绿白色调和 —— 浅淡、柔和、白绿融合 */
-  --background: oklch(0.972 0.018 110);          /* 米白偏暖 */
-  --foreground: oklch(0.38 0.05 150);            /* 沉静墨绿 */
-  --card: oklch(0.985 0.014 115 / 0.72);
-  --card-foreground: oklch(0.36 0.05 150);
-  --popover: oklch(0.985 0.014 115);
-  --popover-foreground: oklch(0.36 0.05 150);
-  --primary: oklch(0.74 0.07 148);               /* 玉绿白 */
+  /* 暖米白 × 清新白绿 —— 治愈、柔和、不刺眼 */
+  --background: oklch(0.982 0.022 95);           /* 暖米白带一丝奶油 */
+  --foreground: oklch(0.36 0.045 150);           /* 沉静墨绿字 */
+  --card: oklch(0.992 0.012 100 / 0.78);
+  --card-foreground: oklch(0.34 0.05 150);
+  --popover: oklch(0.992 0.012 100);
+  --popover-foreground: oklch(0.34 0.05 150);
+  --primary: oklch(0.82 0.07 150);               /* 清新白绿 */
   --primary-foreground: oklch(0.30 0.06 150);
-  --secondary: oklch(0.94 0.025 130 / 0.78);
+  --secondary: oklch(0.95 0.028 110 / 0.82);
   --secondary-foreground: oklch(0.40 0.06 148);
-  --muted: oklch(0.95 0.018 115 / 0.72);
-  --muted-foreground: oklch(0.52 0.04 145);
-  --accent: oklch(0.86 0.06 140);
+  --muted: oklch(0.96 0.020 100 / 0.75);
+  --muted-foreground: oklch(0.50 0.04 145);
+  --accent: oklch(0.88 0.06 140);
   --accent-foreground: oklch(0.32 0.06 150);
-  --destructive: oklch(0.66 0.14 25);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.74 0.05 148 / 0.30);
-  --input: oklch(0.99 0.010 110 / 0.78);
-  --ring: oklch(0.74 0.07 148);
+  --destructive: oklch(0.78 0.08 150);           /* 与主色统一，不用红 */
+  --destructive-foreground: oklch(0.30 0.06 150);
+  --border: oklch(0.78 0.05 148 / 0.30);
+  --input: oklch(0.995 0.010 100 / 0.82);
+  --ring: oklch(0.82 0.07 150);
+}
+
+/* 日历组件内部使用系统字体，避免楷体导致数字错位 */
+[data-slot="calendar"], [data-slot="calendar"] * {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !important;
+  letter-spacing: 0 !important;
 }
 
 /* 全局隐藏滚动条 */
