@@ -98,14 +98,20 @@ body::-webkit-scrollbar,
     0 10px 32px -18px color-mix(in oklab, oklch(0.55 0.06 120) 22%, transparent);
 }
 
-/* 有机呼吸：scale + border-radius 微扰动，像活体起伏 */
+/* 椭圆按钮：仅 scale 微浮，保持 pill 形状 */
 @keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.012); }
+}
+.breathe { animation: breathe 5s ease-in-out infinite; }
+
+/* 大圆呼吸：scale + border-radius 有机扰动 */
+@keyframes breathe-organic {
   0%, 100% { transform: scale(1); border-radius: 50%; }
   33%      { transform: scale(1.012) translateY(-1px); border-radius: 49% 51% 50.5% 49.5% / 50.5% 49% 51% 49.5%; }
   66%      { transform: scale(1.008) translateY(1px); border-radius: 50.5% 49.5% 49% 51% / 49.5% 50.5% 49% 50.5%; }
 }
-.breathe { animation: breathe 5.5s ease-in-out infinite; }
-.breathe-slow { animation: breathe 7.5s ease-in-out infinite; }
+.breathe-slow { animation: breathe-organic 6.5s ease-in-out infinite; }
 
 /* 复盘下划线 */
 .leaf-underline {
