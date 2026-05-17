@@ -412,15 +412,15 @@ function drawLabel(
     <g>
       <path
         d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
-        stroke="oklch(0.5 0.1 148 / 0.6)"
+        stroke="oklch(0.45 0.055 135 / 0.52)"
         fill="none"
       />
-      <circle cx={ex} cy={ey} r={2} fill="oklch(0.5 0.13 148)" />
+      <circle cx={ex} cy={ey} r={2} fill="oklch(0.47 0.075 135)" />
       <text
         x={tx}
         y={ey - (lines.length > 1 ? 6 : 0)}
         textAnchor={right ? "start" : "end"}
-        fill="oklch(0.30 0.06 148)"
+        fill="oklch(0.30 0.035 142)"
         fontSize="11"
       >
         {lines.map((ln, i) => (
@@ -433,7 +433,7 @@ function drawLabel(
         x={tx}
         y={ey + 12 + (lines.length - 1) * 12}
         textAnchor={right ? "start" : "end"}
-        fill="oklch(0.45 0.06 148)"
+        fill="oklch(0.44 0.035 140)"
         fontSize="10"
       >
         {sub}
