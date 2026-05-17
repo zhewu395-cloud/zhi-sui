@@ -3,25 +3,26 @@ import { Plus, X } from "lucide-react";
 import { getAll, put, del, uid, type Activity } from "@/lib/db";
 
 const DEFAULT: Activity[] = [
-  { id: "a-class", name: "上课", color: "oklch(0.82 0.06 148)", createdAt: 0 },
-  { id: "a-write", name: "文案", color: "oklch(0.85 0.05 130)", createdAt: 0 },
-  { id: "a-walk", name: "走路", color: "oklch(0.83 0.06 165)", createdAt: 0 },
-  { id: "a-read", name: "阅读", color: "oklch(0.86 0.05 110)", createdAt: 0 },
+  { id: "a-class", name: "上课", color: "#bfe3c6", createdAt: 0 },
+  { id: "a-write", name: "文案", color: "#d6e7b8", createdAt: 0 },
+  { id: "a-walk", name: "走路", color: "#c6e3d4", createdAt: 0 },
+  { id: "a-read", name: "阅读", color: "#e7dcb8", createdAt: 0 },
 ];
 
-const DEFAULT_COLOR = "oklch(0.82 0.06 148)";
+const DEFAULT_COLOR = "#bfe3c6";
 
-function buildOklch(l: number, c: number, h: number) {
-  return `oklch(${l.toFixed(2)} ${c.toFixed(3)} ${h.toFixed(0)})`;
-}
+const PRESET_SWATCHES = [
+  "#f4a8a8", "#f6c177", "#f5e29a", "#c9e29a", "#a3dca8",
+  "#9ad6c1", "#a8d8f0", "#a8b8ee", "#c9a8ee", "#eba8d8",
+  "#e8d4b0", "#b9a890", "#d8d8d8", "#7a7a7a", "#2d2d2d",
+];
 
 export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
   const [list, setList] = useState<Activity[]>([]);
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
-  const [hue, setHue] = useState(148);    // 色调
-  const [chroma, setChroma] = useState(0.06); // 饱和
-  const [light, setLight] = useState(0.82); // 明度 / 色温感
+  
+  const [color, setColor] = useState<string>("#a3dca8");
   const [longPressed, setLongPressed] = useState<string | null>(null);
 
   const load = async () => {
@@ -42,14 +43,12 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
     const a: Activity = {
       id: uid(),
       name: name.trim(),
-      color: buildOklch(light, chroma, hue),
+      color,
       createdAt: Date.now(),
     };
     await put("activities", a);
     setName("");
-    setHue(148);
-    setChroma(0.06);
-    setLight(0.82);
+    setColor("#a3dca8");
     setAdding(false);
     load();
   };
@@ -68,7 +67,7 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
     if (pressTimer) clearTimeout(pressTimer);
   };
 
-  const currentColor = buildOklch(light, chroma, hue);
+  const currentColor = color;
 
   return (
     <div className="pt-2" onClick={() => longPressed && setLongPressed(null)}>
@@ -96,7 +95,7 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
                   background: `color-mix(in oklab, ${color} 55%, oklch(0.985 0.014 115))`,
                   borderColor: `color-mix(in oklab, ${color} 50%, transparent)`,
                 }}
-                className="breathe w-full rounded-[55%/45%] border px-5 py-7 text-lg text-foreground/85 font-medium active:scale-95 transition shadow-sm backdrop-blur-md"
+                className="breathe w-full rounded-full border px-5 py-6 text-lg text-foreground/85 font-medium active:scale-95 transition shadow-sm backdrop-blur-md"
               >
                 {a.name}
               </button>
@@ -150,53 +149,41 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
               className="w-full rounded-xl border border-border bg-input px-4 py-3 outline-none focus:ring-2 focus:ring-ring"
             />
 
-            {/* 调色盘 */}
+            {/* 标准全色调色盘 */}
             <div className="mt-4 space-y-3">
               <div className="flex items-center gap-3">
-                <div
-                  className="h-12 w-12 rounded-full shadow-inner border border-border"
+                <label
+                  className="h-12 w-12 rounded-full shadow-inner border border-border overflow-hidden cursor-pointer"
                   style={{ background: currentColor }}
-                />
-                <div className="text-xs text-foreground/60">预览颜色</div>
+                >
+                  <input
+                    type="color"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    className="opacity-0 w-full h-full cursor-pointer"
+                  />
+                </label>
+                <div className="flex-1">
+                  <div className="text-xs text-foreground/60 mb-1">点击圆形从全色谱中选取</div>
+                  <div className="text-[11px] text-foreground/50 tabular-nums">{color.toUpperCase()}</div>
+                </div>
               </div>
 
-              <label className="block text-xs text-foreground/60">
-                色调 (Hue) {hue}°
-                <input
-                  type="range"
-                  min={0}
-                  max={360}
-                  value={hue}
-                  onChange={(e) => setHue(+e.target.value)}
-                  className="mt-1 w-full accent-primary"
-                />
-              </label>
-
-              <label className="block text-xs text-foreground/60">
-                饱和度 {chroma.toFixed(3)}
-                <input
-                  type="range"
-                  min={0}
-                  max={0.18}
-                  step={0.005}
-                  value={chroma}
-                  onChange={(e) => setChroma(+e.target.value)}
-                  className="mt-1 w-full accent-primary"
-                />
-              </label>
-
-              <label className="block text-xs text-foreground/60">
-                明度 / 色温 {light.toFixed(2)}
-                <input
-                  type="range"
-                  min={0.55}
-                  max={0.95}
-                  step={0.01}
-                  value={light}
-                  onChange={(e) => setLight(+e.target.value)}
-                  className="mt-1 w-full accent-primary"
-                />
-              </label>
+              <div className="grid grid-cols-8 gap-1.5">
+                {PRESET_SWATCHES.map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => setColor(c)}
+                    className={`h-7 w-7 rounded-full border ${
+                      color.toLowerCase() === c.toLowerCase()
+                        ? "ring-2 ring-foreground/60"
+                        : "border-border"
+                    }`}
+                    style={{ background: c }}
+                    aria-label={c}
+                  />
+                ))}
+              </div>
             </div>
 
             <div className="mt-4 flex justify-end gap-2">
