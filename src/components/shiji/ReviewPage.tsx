@@ -159,21 +159,21 @@ export function ReviewPage() {
   // ===== 主视图 =====
   return (
     <div className="pt-2 space-y-5">
-      {/* 信纸书写区 —— 纯色奶白底，浅绿横线 + 细腻竖向纹路 */}
+      {/* 信纸书写区 —— 奶白纯色底，仅浅绿横线，日期写在第一根横线上 */}
       <button
         onClick={startNew}
-        className="block w-full text-left rounded-3xl px-6 py-5 transition active:scale-[0.99] overflow-hidden"
+        className="block w-full text-left rounded-3xl px-6 pt-3 pb-5 transition active:scale-[0.99] overflow-hidden"
         style={{
           height: "32vh",
           minHeight: 200,
           backgroundColor: "#FBFAF4",
           backgroundImage:
-            "repeating-linear-gradient(to bottom, transparent 0px, transparent 31px, oklch(0.82 0.06 142 / 0.42) 31px, oklch(0.82 0.06 142 / 0.42) 32px), repeating-linear-gradient(to right, transparent 0px, transparent 3px, oklch(0.90 0.02 100 / 0.18) 3px, oklch(0.90 0.02 100 / 0.18) 4px)",
-          border: "1px solid oklch(0.85 0.03 130 / 0.35)",
+            "repeating-linear-gradient(to bottom, transparent 0px, transparent 31px, oklch(0.82 0.06 142 / 0.42) 31px, oklch(0.82 0.06 142 / 0.42) 32px)",
+          border: "1px solid oklch(0.85 0.03 130 / 0.30)",
           lineHeight: "32px",
         }}
       >
-        <div className="text-foreground/55 text-[11px] tracking-wide">
+        <div className="text-foreground/55 text-[11px] tracking-wide leading-[32px]">
           {today}
         </div>
       </button>
@@ -284,9 +284,13 @@ export function ReviewPage() {
                   setLongSplit(false);
                 }}
                 onClick={() => setEditing(r)}
-                className={`glass rounded-2xl px-4 py-2.5 cursor-grab active:cursor-grabbing ${
+                className={`rounded-2xl px-4 py-2.5 cursor-grab active:cursor-grabbing ${
                   draggingId === r.id ? "opacity-50" : ""
                 }`}
+                style={{
+                  background: "oklch(0.94 0.045 140 / 0.38)",
+                  border: "none",
+                }}
               >
                 <div className="flex justify-between text-xs text-foreground/55">
                   <span>{r.date}</span>
@@ -339,11 +343,16 @@ function HDropZone({
       onDrop={onDrop}
       className={`w-full rounded-2xl text-center transition ${
         compact ? "py-2 text-sm" : "py-5 text-base"
-      } ${
-        active
-          ? "bg-primary/15 border border-primary"
-          : "glass border-transparent"
       }`}
+      style={{
+        background: active
+          ? "oklch(0.88 0.075 140 / 0.55)"
+          : "oklch(0.94 0.045 140 / 0.38)",
+        border: "none",
+        color: "oklch(0.38 0.075 145)",
+        backdropFilter: "none",
+        WebkitBackdropFilter: "none",
+      }}
     >
       {label}
     </button>
