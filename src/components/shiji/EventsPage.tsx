@@ -22,8 +22,7 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
   const [hue, setHue] = useState(148);    // 色调
-  const [chroma, setChroma] = useState(0.06); // 饱和
-  const [light, setLight] = useState(0.82); // 明度 / 色温感
+  const [color, setColor] = useState<string>("#a3dca8");
   const [longPressed, setLongPressed] = useState<string | null>(null);
 
   const load = async () => {
@@ -44,14 +43,12 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
     const a: Activity = {
       id: uid(),
       name: name.trim(),
-      color: buildOklch(light, chroma, hue),
+      color,
       createdAt: Date.now(),
     };
     await put("activities", a);
     setName("");
-    setHue(148);
-    setChroma(0.06);
-    setLight(0.82);
+    setColor("#a3dca8");
     setAdding(false);
     load();
   };
@@ -70,7 +67,7 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
     if (pressTimer) clearTimeout(pressTimer);
   };
 
-  const currentColor = buildOklch(light, chroma, hue);
+  const currentColor = color;
 
   return (
     <div className="pt-2" onClick={() => longPressed && setLongPressed(null)}>
