@@ -135,36 +135,28 @@ export function TodosPage() {
 
   return (
     <div
-      className="pt-2"
+      className="pt-0 -mt-1"
       onClick={() => {
         setPressedItem(null);
         setPressedGroup(null);
       }}
     >
       <ParticleLayer />
-      <div
-        className="sticky -top-2 z-20 -mx-4 px-4 pt-2 pb-2 flex items-center justify-end"
-        style={{
-          backgroundImage:
-            "linear-gradient(180deg, oklch(0.985 0.020 110 / 0.55) 0%, oklch(0.985 0.020 110 / 0) 100%)",
-        }}
-      >
+      <div className="sticky -top-2 z-20 -mx-4 px-4 pt-1 pb-1 flex items-center justify-end">
         <button
           onClick={(e) => {
             e.stopPropagation();
             setAdding(true);
           }}
-          className="flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs transition"
+          className="flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-medium transition active:scale-95"
           style={{
-            background: "oklch(0.93 0.055 140 / 0.55)",
-            color: "oklch(0.38 0.075 145)",
-            border: "none",
-            boxShadow: "none",
-            backdropFilter: "none",
-            WebkitBackdropFilter: "none",
+            background: "oklch(0.88 0.075 138 / 0.75)",
+            color: "oklch(0.32 0.085 145)",
+            border: "1px solid oklch(0.72 0.06 138 / 0.35)",
+            boxShadow: "0 4px 14px -8px oklch(0.45 0.08 138 / 0.45)",
           }}
         >
-          <Plus className="h-3.5 w-3.5" /> 添加
+          <Plus className="h-5 w-5" /> 添加
         </button>
       </div>
 
@@ -222,14 +214,18 @@ export function TodosPage() {
               </button>
             )}
 
-            <div className="space-y-2">
+            <div className="divide-y" style={{ borderColor: "oklch(0.72 0.05 138 / 0.30)" }}>
               {items.map((t) => (
                 <div
                   key={t.id}
                   data-todo-row
-                  className={`relative glass flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-300 ${
+                  className={`relative flex items-center gap-3 px-3 py-3 transition-all duration-300 first:rounded-t-xl last:rounded-b-xl ${
                     t.done ? "opacity-55" : ""
                   }`}
+                  style={{
+                    background: "oklch(0.94 0.040 138 / 0.42)",
+                    borderTop: "1px solid oklch(0.70 0.06 138 / 0.32)",
+                  }}
                   onMouseDown={(e) => {
                     e.stopPropagation();
                     startPress(() => setPressedItem(t.id));
