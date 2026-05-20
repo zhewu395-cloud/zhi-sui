@@ -109,12 +109,12 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
 
   return (
     <div className="pt-2" onClick={() => longPressed && setLongPressed(null)}>
-      {/* 3 列 不规则毛玻璃事件按钮 —— 缩小至 60% */}
-      <div className="grid grid-cols-3 gap-3 px-4 pt-2 justify-items-center">
+      {/* 2 列 不规则毛玻璃事件按钮 —— 放大 1.2x、加深透明 */}
+      <div className="grid grid-cols-2 gap-4 px-4 pt-2 justify-items-center">
         {list.map((a, i) => {
           const color = a.color ?? DEFAULT_COLOR;
           return (
-            <div key={a.id} className="relative aspect-square w-[96px]">
+            <div key={a.id} className="relative aspect-square w-[115px]">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -128,9 +128,9 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
                 onTouchEnd={cancelPress}
                 style={{
                   animationDelay: `${(i % 4) * 0.6}s`,
-                  backgroundColor: `color-mix(in oklab, ${color} 45%, transparent)`,
+                  backgroundColor: `color-mix(in oklab, ${color} 26%, transparent)`,
                 }}
-                className="event-blob h-full w-full text-sm text-foreground/85 font-medium"
+                className="event-blob h-full w-full text-base text-foreground/85 font-medium"
               >
                 {a.name}
               </button>
@@ -153,13 +153,14 @@ export function EventsPage({ onStart }: { onStart: (a: Activity) => void }) {
           );
         })}
 
-        <div className="relative aspect-square w-[96px]">
+        <div className="relative aspect-square w-[115px]">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setAdding(true);
             }}
-            className="event-blob flex h-full w-full items-center justify-center gap-1 text-foreground/70 text-sm"
+            style={{ backgroundColor: "color-mix(in oklab, #BFE3C6 26%, transparent)" }}
+            className="event-blob flex h-full w-full items-center justify-center gap-1 text-foreground/70 text-base"
           >
             <Plus className="h-4 w-4" /> 添加
           </button>
