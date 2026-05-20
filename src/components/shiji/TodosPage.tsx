@@ -148,9 +148,15 @@ export function TodosPage() {
             e.stopPropagation();
             setAdding(true);
           }}
-          className="btn-jade flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition active:scale-95"
+          className="flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-semibold transition active:scale-95"
+          style={{
+            background: "linear-gradient(160deg, oklch(0.86 0.095 142), oklch(0.78 0.115 146))",
+            color: "oklch(0.24 0.115 148)",
+            border: "1px solid oklch(0.62 0.10 144 / 0.55)",
+            boxShadow: "0 4px 14px -8px oklch(0.40 0.10 144 / 0.55)",
+          }}
         >
-          <Plus className="h-3.5 w-3.5" /> 添加
+          <Plus className="h-5 w-5" /> 添加
         </button>
       </div>
 
@@ -168,11 +174,11 @@ export function TodosPage() {
             className="relative mb-4 rounded-3xl px-3 py-3 backdrop-blur-sm"
             style={{
               background: isToday
-                ? "linear-gradient(180deg, oklch(0.995 0.008 120 / 0.45) 0%, oklch(0.975 0.025 132 / 0.40) 50%, oklch(0.945 0.050 138 / 0.42) 100%)"
-                : "linear-gradient(180deg, oklch(0.995 0.008 120 / 0.32) 0%, oklch(0.975 0.025 132 / 0.30) 50%, oklch(0.945 0.050 138 / 0.32) 100%)",
+                ? "oklch(0.94 0.045 130 / 0.42)"
+                : "oklch(0.94 0.035 132 / 0.32)",
               border: isToday
-                ? "1px solid oklch(0.78 0.060 135 / 0.35)"
-                : "1px solid oklch(0.82 0.045 132 / 0.28)",
+                ? "1px solid oklch(0.72 0.065 130 / 0.32)"
+                : "1px solid oklch(0.78 0.045 132 / 0.25)",
             }}
           >
             <div
@@ -189,7 +195,15 @@ export function TodosPage() {
               onTouchEnd={cancelPress}
             >
               {isToday && (
-                <span className="text-xs text-foreground/65">今日</span>
+                <span
+                  className="rounded-full px-2 py-0.5 text-[10px]"
+                  style={{
+                    background: "oklch(0.78 0.115 146)",
+                    color: "oklch(0.22 0.12 148)",
+                  }}
+                >
+                  今日
+                </span>
               )}
               <span>{fmtDate(d)}</span>
             </div>
@@ -214,9 +228,9 @@ export function TodosPage() {
                     t.done ? "opacity-55" : ""
                   }`}
                   style={{
-                    background: "linear-gradient(180deg, oklch(0.92 0.080 132 / 0.70) 0%, oklch(0.86 0.130 138 / 0.72) 50%, oklch(0.80 0.160 142 / 0.72) 100%)",
-                    border: "1px solid oklch(0.62 0.140 140 / 0.45)",
-                    boxShadow: "0 2px 10px -6px oklch(0.42 0.15 140 / 0.40)",
+                    background: "oklch(0.86 0.075 130 / 0.85)",
+                    border: "1px solid oklch(0.58 0.085 132 / 0.50)",
+                    boxShadow: "0 2px 8px -6px oklch(0.40 0.08 132 / 0.40)",
                   }}
                   onMouseDown={(e) => {
                     e.stopPropagation();
