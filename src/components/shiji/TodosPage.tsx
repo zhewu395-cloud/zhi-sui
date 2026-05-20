@@ -148,12 +148,12 @@ export function TodosPage() {
             e.stopPropagation();
             setAdding(true);
           }}
-          className="flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-medium transition active:scale-95"
+          className="flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-semibold transition active:scale-95"
           style={{
-            background: "oklch(0.88 0.075 138 / 0.75)",
-            color: "oklch(0.32 0.085 145)",
-            border: "1px solid oklch(0.72 0.06 138 / 0.35)",
-            boxShadow: "0 4px 14px -8px oklch(0.45 0.08 138 / 0.45)",
+            background: "linear-gradient(160deg, oklch(0.86 0.095 142), oklch(0.78 0.115 146))",
+            color: "oklch(0.24 0.115 148)",
+            border: "1px solid oklch(0.62 0.10 144 / 0.55)",
+            boxShadow: "0 4px 14px -8px oklch(0.40 0.10 144 / 0.55)",
           }}
         >
           <Plus className="h-5 w-5" /> 添加
