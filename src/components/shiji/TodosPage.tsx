@@ -148,15 +148,9 @@ export function TodosPage() {
             e.stopPropagation();
             setAdding(true);
           }}
-          className="flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-semibold transition active:scale-95"
-          style={{
-            background: "linear-gradient(160deg, oklch(0.86 0.095 142), oklch(0.78 0.115 146))",
-            color: "oklch(0.24 0.115 148)",
-            border: "1px solid oklch(0.62 0.10 144 / 0.55)",
-            boxShadow: "0 4px 14px -8px oklch(0.40 0.10 144 / 0.55)",
-          }}
+          className="btn-jade flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition active:scale-95"
         >
-          <Plus className="h-5 w-5" /> 添加
+          <Plus className="h-3.5 w-3.5" /> 添加
         </button>
       </div>
 
