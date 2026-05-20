@@ -148,15 +148,9 @@ export function TodosPage() {
             e.stopPropagation();
             setAdding(true);
           }}
-          className="flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-semibold transition active:scale-95"
-          style={{
-            background: "linear-gradient(160deg, oklch(0.86 0.095 142), oklch(0.78 0.115 146))",
-            color: "oklch(0.24 0.115 148)",
-            border: "1px solid oklch(0.62 0.10 144 / 0.55)",
-            boxShadow: "0 4px 14px -8px oklch(0.40 0.10 144 / 0.55)",
-          }}
+          className="btn-jade flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition active:scale-95"
         >
-          <Plus className="h-5 w-5" /> 添加
+          <Plus className="h-3.5 w-3.5" /> 添加
         </button>
       </div>
 
@@ -195,15 +189,7 @@ export function TodosPage() {
               onTouchEnd={cancelPress}
             >
               {isToday && (
-                <span
-                  className="rounded-full px-2 py-0.5 text-[10px]"
-                  style={{
-                    background: "oklch(0.78 0.115 146)",
-                    color: "oklch(0.22 0.12 148)",
-                  }}
-                >
-                  今日
-                </span>
+                <span className="text-xs text-foreground/65">今日</span>
               )}
               <span>{fmtDate(d)}</span>
             </div>
@@ -228,9 +214,9 @@ export function TodosPage() {
                     t.done ? "opacity-55" : ""
                   }`}
                   style={{
-                    background: "oklch(0.90 0.145 132 / 0.85)",
-                    border: "1px solid oklch(0.62 0.135 134 / 0.50)",
-                    boxShadow: "0 2px 8px -6px oklch(0.45 0.12 134 / 0.40)",
+                    background: "oklch(0.88 0.180 138 / 0.85)",
+                    border: "1px solid oklch(0.60 0.165 140 / 0.55)",
+                    boxShadow: "0 2px 10px -6px oklch(0.42 0.15 140 / 0.45)",
                   }}
                   onMouseDown={(e) => {
                     e.stopPropagation();
