@@ -284,8 +284,8 @@ export function ReviewPage() {
                   draggingId === r.id ? "opacity-50" : ""
                 }`}
                 style={{
-                  background: "oklch(0.94 0.045 140 / 0.38)",
-                  border: "none",
+                  backgroundImage: "linear-gradient(160deg, oklch(0.990 0.030 130) 0%, oklch(0.965 0.065 140) 100%)",
+                  border: "1px solid oklch(0.80 0.055 138 / 0.30)",
                 }}
               >
                 <div className="flex justify-between text-xs text-foreground/55">
