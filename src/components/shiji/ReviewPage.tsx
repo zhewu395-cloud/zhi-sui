@@ -94,7 +94,7 @@ export function ReviewPage() {
       <div className="pt-2">
         <div className="flex items-center justify-between">
           <LeafBack onClick={() => setOpenCat(null)} />
-          <div className="flex gap-1">
+          <div className="flex gap-2">
             {(["week", "month"] as const).map((v) => (
               <button
                 key={v}
@@ -102,13 +102,9 @@ export function ReviewPage() {
                   setLongView(v);
                   setOpenCat(v);
                 }}
-                className={`rounded-full px-3 py-1 text-xs ${
-                  cat === v
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-foreground/65"
-                }`}
+                className={`btn-jade ${cat === v ? "btn-jade-active" : ""} rounded-full px-3 py-1 text-xs`}
               >
-                {v === "week" ? "周" : "月"}
+                {v === "week" ? "周复盘" : "月复盘"}
               </button>
             ))}
           </div>
@@ -341,18 +337,9 @@ function HDropZone({
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
-      className={`w-full rounded-2xl text-center transition ${
+      className={`btn-jade ${active ? "btn-jade-active" : ""} w-full rounded-2xl text-center transition ${
         compact ? "py-2 text-sm" : "py-5 text-base"
       }`}
-      style={{
-        background: active
-          ? "oklch(0.88 0.075 140 / 0.55)"
-          : "oklch(0.94 0.045 140 / 0.38)",
-        border: "none",
-        color: "oklch(0.38 0.075 145)",
-        backdropFilter: "none",
-        WebkitBackdropFilter: "none",
-      }}
     >
       {label}
     </button>

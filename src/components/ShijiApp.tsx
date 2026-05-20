@@ -49,7 +49,7 @@ export function ShijiApp() {
         </h1>
         <button
           onClick={() => setSettingsOpen(true)}
-          className="grid h-10 w-10 place-items-center rounded-full glass text-foreground/80 active:scale-95 transition"
+          className="btn-jade grid h-10 w-10 place-items-center rounded-full active:scale-95 transition"
           aria-label="设置"
         >
           <Settings className="h-5 w-5" />
@@ -73,9 +73,10 @@ export function ShijiApp() {
         <nav
           className="absolute bottom-0 left-0 right-0 z-20 px-2 pt-3 pb-7 border-t"
           style={{
-            borderColor: "oklch(0.78 0.05 138 / 0.32)",
+            borderColor: "oklch(0.85 0.04 138 / 0.40)",
             backgroundImage:
-              "linear-gradient(180deg, oklch(0.92 0.060 138 / 0.78) 0%, oklch(0.94 0.045 135 / 0.80) 45%, oklch(0.95 0.035 130 / 0.85) 100%)",
+              "linear-gradient(180deg, oklch(0.995 0.008 120) 0%, oklch(0.975 0.025 132) 50%, oklch(0.945 0.050 138) 100%)",
+            boxShadow: "0 -6px 20px -14px oklch(0.55 0.07 140 / 0.30)",
           }}
         >
           <div className="grid grid-cols-4 gap-1">

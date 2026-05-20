@@ -112,7 +112,7 @@ export function SummaryPage() {
         className="sticky -top-2 z-20 -mx-4 px-4 pt-2 pb-3"
       >
         <div className="flex items-center justify-between gap-2">
-          <div className="flex flex-1 items-center justify-around">
+          <div className="flex flex-1 items-center gap-2">
             {(
               [
                 ["day", "日总结"],
@@ -123,18 +123,7 @@ export function SummaryPage() {
               <button
                 key={k}
                 onClick={() => setRange(k)}
-                className="px-2 py-1 text-sm bg-transparent transition-colors"
-                style={{
-                  color:
-                    range === k
-                      ? "oklch(0.38 0.10 145)"
-                      : "oklch(0.50 0.05 142 / 0.75)",
-                  fontWeight: range === k ? 600 : 400,
-                  borderBottom:
-                    range === k
-                      ? "1.5px solid oklch(0.55 0.10 145 / 0.7)"
-                      : "1.5px solid transparent",
-                }}
+                className={`btn-jade ${range === k ? "btn-jade-active" : ""} flex-1 rounded-full px-3 py-1.5 text-sm transition`}
               >
                 {l}
               </button>
