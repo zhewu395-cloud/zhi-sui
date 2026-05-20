@@ -228,9 +228,9 @@ export function TodosPage() {
                     t.done ? "opacity-55" : ""
                   }`}
                   style={{
-                    background: "linear-gradient(160deg, oklch(0.88 0.085 142), oklch(0.81 0.105 146))",
-                    border: "1px solid oklch(0.66 0.10 144 / 0.50)",
-                    boxShadow: "0 2px 8px -6px oklch(0.40 0.10 144 / 0.45)",
+                    background: "oklch(0.86 0.075 130 / 0.85)",
+                    border: "1px solid oklch(0.58 0.085 132 / 0.50)",
+                    boxShadow: "0 2px 8px -6px oklch(0.40 0.08 132 / 0.40)",
                   }}
                   onMouseDown={(e) => {
                     e.stopPropagation();
