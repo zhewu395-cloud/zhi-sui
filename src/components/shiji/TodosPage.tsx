@@ -156,26 +156,59 @@ export function TodosPage() {
     >
       <ParticleLayer />
       <div className="sticky -top-2 z-20 -mx-4 px-4 pt-1 pb-1 flex items-center justify-end">
+      <div className="sticky -top-2 z-20 -mx-4 px-4 pt-1 pb-1 flex items-center justify-end gap-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              onClick={(e) => e.stopPropagation()}
+              className="btn-jade grid h-10 w-10 place-items-center rounded-full active:scale-95 transition relative"
+              aria-label="按日期筛选"
+            >
+              <Filter className="h-4 w-4" />
+              {filterDate && (
+                <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-primary" />
+              )}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-auto p-0"
+            align="end"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-3 pt-2">
+              <span className="text-xs text-foreground/60">按日期筛选</span>
+              {filterDate && (
+                <button
+                  onClick={() => setFilterDate(null)}
+                  className="text-xs text-primary"
+                >
+                  清除
+                </button>
+              )}
+            </div>
+            <Calendar
+              mode="single"
+              selected={filterDate ?? undefined}
+              onSelect={(d) => setFilterDate(d ?? null)}
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
         <button
           onClick={(e) => {
             e.stopPropagation();
             setAdding(true);
           }}
-          className="flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-semibold transition active:scale-95"
-          style={{
-            background: "linear-gradient(160deg, oklch(0.86 0.095 142), oklch(0.78 0.115 146))",
-            color: "oklch(0.24 0.115 148)",
-            border: "1px solid oklch(0.62 0.10 144 / 0.55)",
-            boxShadow: "0 4px 14px -8px oklch(0.40 0.10 144 / 0.55)",
-          }}
+          className="btn-jade grid h-10 w-10 place-items-center rounded-full active:scale-95 transition"
+          aria-label="添加"
         >
-          <Plus className="h-5 w-5" /> 添加
+          <Plus className="h-5 w-5" />
         </button>
       </div>
 
       {groups.length === 0 && (
         <div className="mt-16 text-center text-foreground/50 text-sm">
-          还没有待办，点击右上角「添加」开始
+          {filterDate ? "该日期没有待办" : "还没有待办，点击右上角「+」开始"}
         </div>
       )}
 
