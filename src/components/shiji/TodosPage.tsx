@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, Check, X, Calendar as CalendarIcon } from "lucide-react";
+import { Plus, Check, X, Calendar as CalendarIcon, Filter } from "lucide-react";
 import { getAll, put, del, uid, type Todo } from "@/lib/db";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
