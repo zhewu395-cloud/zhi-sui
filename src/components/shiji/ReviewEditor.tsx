@@ -104,12 +104,10 @@ export function ReviewEditor({
       : allReviews.filter((r) => r.id !== review.id);
 
   return (
-    <div
-      className="fixed inset-0 z-40 flex flex-col"
-      style={{ backgroundColor: "#F2EEE2" }}
-    >
+    <div className="fixed inset-0 z-40 flex flex-col bg-background">
       <header className="flex items-center justify-between px-3 pt-10 pb-2">
         <LeafBack onClick={onClose} />
+        <div className="text-sm text-foreground/60">{draft.date}</div>
         <button
           onClick={() => setLinkOpen(true)}
           className="grid h-9 w-9 place-items-center rounded-full glass text-primary"
@@ -129,7 +127,7 @@ export function ReviewEditor({
       </div>
 
       {/* 工具栏 */}
-      <div className="flex items-center gap-1 px-3 py-2 border-y border-border/60 bg-background/40">
+      <div className="flex items-center gap-1 px-3 py-2 border-y border-border/60 bg-background/60">
         <ToolBtn onClick={() => exec("bold")}>
           <Bold className="h-4 w-4" />
         </ToolBtn>
@@ -159,17 +157,13 @@ export function ReviewEditor({
         </ToolBtn>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 py-4">
-        <div className="text-xs text-foreground/55 mb-2">{draft.date}</div>
-        <div
-          ref={editorRef}
-          contentEditable
-          suppressContentEditableWarning
-          className="outline-none text-base leading-7"
-          style={{ fontFamily: "inherit" }}
-        />
-      </div>
-
+      <div
+        ref={editorRef}
+        contentEditable
+        suppressContentEditableWarning
+        className="flex-1 overflow-y-auto px-5 py-4 outline-none text-base leading-7"
+        style={{ fontFamily: "inherit" }}
+      />
 
       {linkOpen && (
         <div
