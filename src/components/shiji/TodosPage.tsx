@@ -231,17 +231,10 @@ export function TodosPage() {
               onTouchEnd={cancelPress}
             >
               {isToday && (
-                <span
-                  className="rounded-full px-2 py-0.5 text-[10px]"
-                  style={{
-                    background: "oklch(0.78 0.115 146)",
-                    color: "oklch(0.22 0.12 148)",
-                  }}
-                >
-                  今日
-                </span>
+                <span className="text-foreground/65">今日 ·</span>
               )}
               <span>{fmtDate(d)}</span>
+
             </div>
             {pressedGroup === d && (
               <button
