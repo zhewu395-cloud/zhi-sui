@@ -27,6 +27,8 @@ export function TodosPage() {
   const [date, setDate] = useState<Date>(new Date());
   const [pressedItem, setPressedItem] = useState<string | null>(null);
   const [pressedGroup, setPressedGroup] = useState<string | null>(null);
+  const [filterDate, setFilterDate] = useState<Date | undefined>(undefined);
+
 
   const load = async () => {
     const rows = await getAll<Todo>("todos");
