@@ -67,9 +67,11 @@ export function TodosPage() {
   // 分组：今日在最上，其余按日期降序（仅展示有未完成或当天的组）
   const groups = useMemo(() => {
     const map = new Map<string, Todo[]>();
+    const filterStr = filterDate ? fmtDateInput(filterDate) : null;
     for (const t of list) {
       // 往日只显示未完成 + 当天显示全部
       if (t.date !== todayStr && t.done) continue;
+      if (filterStr && t.date !== filterStr) continue;
       (map.get(t.date) ?? map.set(t.date, []).get(t.date)!).push(t);
     }
     // 排序：今日优先，其后按日期降序
@@ -88,7 +90,8 @@ export function TodosPage() {
       });
     }
     return keys.map((k) => [k, map.get(k)!] as const);
-  }, [list, todayStr]);
+  }, [list, todayStr, filterDate]);
+
 
   const toggle = async (t: Todo, ev: React.MouseEvent) => {
     if (!t.done) {
