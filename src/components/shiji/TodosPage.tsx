@@ -299,13 +299,13 @@ export function TodosPage() {
                   </button>
                   <div className="flex-1 min-w-0">
                     <div
-                      className={`truncate ${t.done ? "line-through text-foreground/45" : ""}`}
+                      className={`truncate ${t.done ? "line-through opacity-80" : ""}`}
                     >
                       {t.title}
                     </div>
                     {t.details && (
                       <div
-                        className={`truncate text-xs text-foreground/55 ${t.done ? "line-through" : ""}`}
+                        className={`truncate text-xs ${t.done ? "line-through opacity-70" : "text-foreground/55"}`}
                       >
                         {t.details}
                       </div>
