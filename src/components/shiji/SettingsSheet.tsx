@@ -1,6 +1,41 @@
 import { useRef, useState } from "react";
 import { Download, Upload, X, ShieldCheck } from "lucide-react";
-import { exportAll, importAll } from "@/lib/db";
+import { exportAll, importAll, type Review } from "@/lib/db";
+
+const CATEGORY_LABEL: Record<string, string> = {
+  pending: "待分类",
+  sundry: "琐碎记",
+  day: "日复盘",
+  week: "周复盘",
+  month: "月复盘",
+};
+
+function buildReviewsMarkdown(reviews: Review[]): string {
+  const order = ["pending", "sundry", "day", "week", "month"];
+  const grouped: Record<string, Review[]> = {};
+  for (const r of reviews) {
+    const k = r.category || r.type || "pending";
+    (grouped[k] ||= []).push(r);
+  }
+  for (const k of Object.keys(grouped)) {
+    grouped[k].sort((a, b) => (a.date < b.date ? 1 : -1));
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  let md = `# 时迹 · 复盘归档\n\n导出日期：${today}\n\n---\n\n`;
+  for (const k of order) {
+    const list = grouped[k];
+    if (!list?.length) continue;
+    md += `## ${CATEGORY_LABEL[k] ?? k}\n\n`;
+    for (const r of list) {
+      const title = r.title?.trim() || "（无标题）";
+      md += `### ${r.date} · ${title}\n\n`;
+      md += `${(r.content || "").trim() || "_（空）_"}\n\n`;
+    }
+    md += `---\n\n`;
+  }
+  return md;
+}
+
 
 export function SettingsSheet({
   open,
