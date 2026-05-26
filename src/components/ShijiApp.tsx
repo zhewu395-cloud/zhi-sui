@@ -117,7 +117,12 @@ export function ShijiApp() {
               <button
                 key={k}
                 onClick={() => setTab(k)}
-                className={`py-2 text-base leading-relaxed bg-transparent transition-colors ${
+                onPointerDown={startLongPress}
+                onPointerUp={cancelLongPress}
+                onPointerLeave={cancelLongPress}
+                onPointerCancel={cancelLongPress}
+                onContextMenu={(e) => e.preventDefault()}
+                className={`py-2 text-base leading-relaxed bg-transparent transition-colors select-none ${
                   tab === k
                     ? "text-[oklch(0.40_0.12_145)] font-semibold"
                     : "text-foreground/55"
