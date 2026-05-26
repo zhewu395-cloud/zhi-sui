@@ -116,11 +116,10 @@ body::-webkit-scrollbar,
   border: 1px solid oklch(0.78 0.055 145 / 0.55);
   color: oklch(0.36 0.085 145);
   box-shadow:
-    inset 0 1px 0 0 oklch(1 0 0 / 0.75),
-    inset 0 -1px 0 0 oklch(0.70 0.060 145 / 0.30),
-    inset 0 0 10px 0 oklch(1 0 0 / 0.25),
-    0 1px 2px 0 oklch(0.40 0.06 145 / 0.10),
-    0 4px 14px -8px oklch(0.40 0.07 145 / 0.30);
+    inset 0 1px 3px oklch(1 0 0 / 0.55),
+    inset 0 -1px 2px oklch(0.30 0.05 145 / 0.06),
+    inset 0 0 10px 0 oklch(1 0 0 / 0.18),
+    0 2px 8px 0 oklch(0.30 0.05 145 / 0.07);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -134,11 +133,11 @@ body::-webkit-scrollbar,
   color: oklch(0.30 0.110 145);
   font-weight: 600;
   box-shadow:
-    inset 0 1px 0 0 oklch(1 0 0 / 0.70),
-    inset 0 -1px 0 0 oklch(0.62 0.080 145 / 0.40),
-    inset 0 0 12px 0 oklch(1 0 0 / 0.22),
-    0 1px 2px 0 oklch(0.35 0.07 145 / 0.14),
-    0 6px 18px -10px oklch(0.35 0.08 145 / 0.40);
+    inset 0 1px 3px oklch(1 0 0 / 0.55),
+    inset 0 -1px 2px oklch(0.30 0.05 145 / 0.08),
+    inset 0 0 12px 0 oklch(1 0 0 / 0.18),
+    0 2px 8px 0 oklch(0.30 0.05 145 / 0.08);
+
 }
 /* 总结切换专用：选中时只加深绿色文字，底色保持 */
 .btn-jade-text-active {
