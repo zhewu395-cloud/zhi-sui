@@ -147,9 +147,6 @@ export function ReviewPage() {
     return (
       <div className="pt-2">
         <LeafBack onClick={() => setOpenCat(null)} />
-        <div className="mt-4 px-1 text-base font-medium leaf-underline">
-          {label}
-        </div>
         <CardList rows={rows} onOpen={setEditing} onRemove={removeReview} />
         {editing && (
           <ReviewEditor
