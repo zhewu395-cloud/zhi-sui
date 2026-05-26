@@ -243,14 +243,14 @@ export function ParticleLayer() {
       <style>{`
         @keyframes petal-burst {
           0% {
-            transform: translate(-50%,-50%) rotate(0deg) scale(0.85);
+            transform: translate(calc(-50% + var(--tx) * 0.18), calc(-50% + var(--ty) * 0.18)) rotate(0deg) scale(0.9);
             opacity: 0;
           }
-          8% {
+          12% {
             opacity: var(--op, 0.8);
-            transform: translate(calc(-50% + var(--tx) * 0.08), calc(-50% + var(--ty) * 0.08)) rotate(10deg) scale(1);
+            transform: translate(calc(-50% + var(--tx) * 0.28), calc(-50% + var(--ty) * 0.28)) rotate(15deg) scale(1);
           }
-          75% { opacity: calc(var(--op, 0.8) * 0.85); }
+          75% { opacity: calc(var(--op, 0.8) * 0.8); }
           100% {
             transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot)) scale(0.55);
             opacity: 0;
