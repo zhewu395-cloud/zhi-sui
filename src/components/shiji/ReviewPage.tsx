@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getAll, put, del, uid, type Review, type ReviewCategory } from "@/lib/db";
 import { ReviewEditor } from "./ReviewEditor";
 import { LeafBack } from "./LeafBack";
@@ -108,8 +108,11 @@ export function ReviewPage() {
       .sort((a, b) => (b.updatedAt ?? b.createdAt) - (a.updatedAt ?? a.createdAt));
     return (
       <div className="pt-2">
-        <div className="flex items-center justify-between">
-          <LeafBack onClick={() => setOpenCat(null)} />
+        <LeafBack
+          onClick={() => setOpenCat(null)}
+          className="!fixed top-1 left-1 z-50"
+        />
+        <div className="flex items-center justify-end">
           <div className="flex gap-2">
             {(["week", "month"] as const).map((v) => (
               <button
@@ -143,10 +146,13 @@ export function ReviewPage() {
     const rows = list
       .filter((r) => r.category === openCat)
       .sort((a, b) => (b.updatedAt ?? b.createdAt) - (a.updatedAt ?? a.createdAt));
-    
+
     return (
       <div className="pt-2">
-        <LeafBack onClick={() => setOpenCat(null)} />
+        <LeafBack
+          onClick={() => setOpenCat(null)}
+          className="!fixed top-1 left-1 z-50"
+        />
         <CardList rows={rows} onOpen={setEditing} onRemove={removeReview} />
         {editing && (
           <ReviewEditor
@@ -377,40 +383,93 @@ function CardList({
   return (
     <div className="mt-3 space-y-2">
       {rows.map((r) => (
-        <div
-          key={r.id}
-          onClick={() => onOpen(r)}
-          className="rounded-2xl px-4 py-3 cursor-pointer"
-          style={{
-            background:
-              "color-mix(in oklab, oklch(0.55 0.13 145) 10%, oklch(0.985 0.018 105))",
-            border:
-              "1px solid color-mix(in oklab, oklch(0.5 0.13 145) 18%, transparent)",
-          }}
-        >
-          <div className="flex items-center justify-between text-xs text-foreground/55">
-            <span>{r.date}</span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemove(r.id);
-              }}
-              className="text-foreground/40"
-            >
-              删除
-            </button>
-          </div>
-          <div className="text-sm font-medium truncate">
-            {r.title || "未命名"}
-          </div>
-          <div
-            className="text-xs text-foreground/65 truncate"
-            style={{ display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}
-          >
-            {stripHtml(r.content) || "—"}
-          </div>
-        </div>
+        <SwipeCard key={r.id} r={r} onOpen={onOpen} onRemove={onRemove} />
       ))}
+    </div>
+  );
+}
+
+function SwipeCard({
+  r,
+  onOpen,
+  onRemove,
+}: {
+  r: Review;
+  onOpen: (r: Review) => void;
+  onRemove: (id: string) => void;
+}) {
+  const [armed, setArmed] = useState(false);
+  const [dx, setDx] = useState(0);
+  const startX = useRef<number | null>(null);
+  const moved = useRef(false);
+  const pressTimer = useRef<number | null>(null);
+
+  const reset = () => {
+    setArmed(false);
+    setDx(0);
+    startX.current = null;
+    moved.current = false;
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    startX.current = e.clientX;
+    moved.current = false;
+    if (pressTimer.current) window.clearTimeout(pressTimer.current);
+    pressTimer.current = window.setTimeout(() => setArmed(true), 450);
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (startX.current === null) return;
+    const d = e.clientX - startX.current;
+    if (Math.abs(d) > 4) moved.current = true;
+    if (armed) setDx(d);
+  };
+  const onPointerUp = () => {
+    if (pressTimer.current) window.clearTimeout(pressTimer.current);
+    if (armed && Math.abs(dx) > 90) {
+      onRemove(r.id);
+      return;
+    }
+    if (!moved.current && !armed) {
+      onOpen(r);
+    }
+    reset();
+  };
+
+  const trashOpacity = Math.min(1, Math.abs(dx) / 90);
+
+  return (
+    <div className="relative">
+      {armed && (
+        <div
+          className="absolute inset-y-0 right-3 flex items-center pointer-events-none"
+          style={{ opacity: 0.35 + trashOpacity * 0.65 }}
+        >
+          <span className="text-base">🗑️</span>
+        </div>
+      )}
+      <div
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={reset}
+        className="rounded-2xl px-4 py-2.5 cursor-pointer select-none touch-pan-y"
+        style={{
+          transform: `translateX(${dx}px)`,
+          transition: dx === 0 ? "transform 0.2s ease" : undefined,
+          backgroundImage:
+            "linear-gradient(160deg, oklch(0.968 0.018 145 / 0.80) 0%, oklch(0.948 0.035 145 / 0.80) 100%)",
+          border: armed
+            ? "1px solid oklch(0.55 0.13 145 / 0.55)"
+            : "1px solid oklch(0.78 0.045 145 / 0.26)",
+          backdropFilter: "blur(6px)",
+          WebkitBackdropFilter: "blur(6px)",
+        }}
+      >
+        <div className="text-xs text-foreground/55">{r.date}</div>
+        <div className="truncate text-sm">
+          {r.title || stripHtml(r.content).slice(0, 40) || "（空）"}
+        </div>
+      </div>
     </div>
   );
 }

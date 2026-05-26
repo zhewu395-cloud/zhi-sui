@@ -12,7 +12,7 @@ import type { Activity } from "@/lib/db";
 type Tab = "events" | "summary" | "todos" | "review";
 
 const TAB_TITLE: Record<Tab, string> = {
-  events: "时迹",
+  events: "知岁",
   summary: "总结",
   todos: "待办",
   review: "复盘",
