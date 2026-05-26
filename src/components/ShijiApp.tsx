@@ -77,7 +77,7 @@ export function ShijiApp() {
           onPointerCancel={cancelLongPress}
           onContextMenu={(e) => e.preventDefault()}
         >
-          {inTimer ? "" : TAB_TITLE[tab]}
+          {inTimer ? "" : (titleOverride ?? TAB_TITLE[tab])}
         </h1>
         <div id="shiji-header-slot" className="flex items-center" />
       </header>
