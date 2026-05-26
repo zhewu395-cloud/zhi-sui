@@ -37,6 +37,22 @@ export function ReviewPage() {
     load();
   }, []);
 
+  // 进入子视图时，把顶部"复盘"大标题换为对应分类名
+  useEffect(() => {
+    const titleMap: Record<string, string> = {
+      sundry: "琐碎记",
+      day: "日复盘",
+      week: "周复盘",
+      month: "月复盘",
+      long: "长复盘",
+    };
+    const detail = openCat ? titleMap[openCat] ?? null : null;
+    window.dispatchEvent(new CustomEvent("shiji-title", { detail }));
+    return () => {
+      window.dispatchEvent(new CustomEvent("shiji-title", { detail: null }));
+    };
+  }, [openCat]);
+
   const startNew = () => {
     const r: Review = {
       id: uid(),
