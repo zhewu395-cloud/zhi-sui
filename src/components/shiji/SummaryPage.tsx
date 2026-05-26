@@ -362,6 +362,7 @@ export function SummaryPage() {
           </section>
         </>
       )}
+      </div>
     </div>
   );
 }
