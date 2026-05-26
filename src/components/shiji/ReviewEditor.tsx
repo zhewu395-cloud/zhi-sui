@@ -104,7 +104,7 @@ export function ReviewEditor({
       : allReviews.filter((r) => r.id !== review.id);
 
   return (
-    <div className="fixed inset-0 z-40 flex flex-col bg-background">
+    <div className="fixed inset-0 z-40 flex flex-col" style={{ background: "rgba(245, 250, 247, 1)" }}>
       <header className="flex items-center justify-between px-3 pt-10 pb-2">
         <LeafBack onClick={onClose} />
         <div className="text-sm text-foreground/60">{draft.date}</div>
