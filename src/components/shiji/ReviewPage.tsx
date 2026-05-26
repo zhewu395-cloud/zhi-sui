@@ -143,7 +143,7 @@ export function ReviewPage() {
     const rows = list
       .filter((r) => r.category === openCat)
       .sort((a, b) => (b.updatedAt ?? b.createdAt) - (a.updatedAt ?? a.createdAt));
-    const label = openCat === "sundry" ? "琐碎记" : "日复盘";
+    
     return (
       <div className="pt-2">
         <LeafBack onClick={() => setOpenCat(null)} />
