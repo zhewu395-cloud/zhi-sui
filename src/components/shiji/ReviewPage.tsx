@@ -125,9 +125,6 @@ export function ReviewPage() {
             ))}
           </div>
         </div>
-        <div className="mt-4 px-1 text-base font-medium leaf-underline">
-          {cat === "week" ? "周复盘" : "月复盘"}
-        </div>
         <CardList rows={rows} onOpen={setEditing} onRemove={removeReview} />
         {editing && (
           <ReviewEditor
