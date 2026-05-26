@@ -198,6 +198,7 @@ export function SummaryPage() {
         </div>
       </div>
 
+      <div className="space-y-5 pt-2">
       {merged.length === 0 ? (
         <div className="mt-20 text-center text-foreground/50 text-sm">
           这段时间还没有记录
