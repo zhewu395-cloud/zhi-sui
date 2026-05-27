@@ -84,7 +84,8 @@ function Particle({
   const dy = dyBase + gravity;
 
   const dur = full ? rand(1.3, 2.1) : rand(1.0, 1.7);
-  const delay = rand(0, full ? 0.25 : 0.14);
+  const delay = full ? rand(0, 0.06) : 0;
+
 
   let w = 12;
   let h = 12;
@@ -160,7 +161,7 @@ function Particle({
     "--rot": `${endRotate}deg`,
     "--op": `${opacity}`,
     pointerEvents: "none",
-    opacity: 0,
+    opacity,
   };
   return <span style={style} />;
 }
@@ -192,20 +193,18 @@ export function ParticleLayer() {
       <style>{`
         @keyframes petal-burst {
           0% {
-            transform: translate(-50%,-50%) rotate(0deg) scale(0.45);
-            opacity: 0;
-            filter: blur(2px);
-          }
-          18% {
+            transform: translate(calc(-50% + var(--tx) * 0.05), calc(-50% + var(--ty) * 0.05)) rotate(0deg) scale(1);
             opacity: var(--op, 0.8);
-            transform: translate(-50%,-50%) rotate(20deg) scale(1.05);
           }
-          75% { opacity: calc(var(--op, 0.8) * 0.85); }
+          70% {
+            opacity: calc(var(--op, 0.8) * 0.85);
+          }
           100% {
             transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot)) scale(0.55);
             opacity: 0;
           }
         }
+
         @keyframes halo-pulse {
           0% { opacity: 0; transform: translate(-50%,-50%) scale(0.4); }
           25% { opacity: 1; }
