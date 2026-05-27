@@ -47,10 +47,8 @@ const SPARKS = [
 type Kind = "leaf-l" | "leaf-s" | "stroke" | "blot" | "spark";
 
 function leafRadius() {
-  // 不对称叶形
-  const a = rand(80, 100);
-  const b = rand(0, 20);
-  return `${a}% ${b}% ${a}% ${b}% / ${a}% ${b}% ${a}% ${b}%`;
+  // 不规则水墨斑块，避免出现椭圆轮廓
+  return `${rand(40, 75)}% ${rand(30, 65)}% ${rand(45, 80)}% ${rand(35, 70)}% / ${rand(40, 70)}% ${rand(45, 75)}% ${rand(35, 65)}% ${rand(45, 75)}%`;
 }
 
 function Particle({
@@ -194,17 +192,13 @@ export function ParticleLayer() {
       <style>{`
         @keyframes petal-burst {
           0% {
-            transform: translate(-50%,-50%) rotate(0deg) scale(0.3);
+            transform: translate(-50%,-50%) rotate(0deg) scale(0.45);
             opacity: 0;
             filter: blur(2px);
           }
-          12% {
-            opacity: 0;
-            transform: translate(calc(-50% + var(--tx) * 0.18), calc(-50% + var(--ty) * 0.18)) rotate(60deg) scale(0.55);
-          }
-          28% {
+          18% {
             opacity: var(--op, 0.8);
-            transform: translate(calc(-50% + var(--tx) * 0.42), calc(-50% + var(--ty) * 0.42)) rotate(140deg) scale(0.95);
+            transform: translate(-50%,-50%) rotate(20deg) scale(1.05);
           }
           75% { opacity: calc(var(--op, 0.8) * 0.85); }
           100% {
