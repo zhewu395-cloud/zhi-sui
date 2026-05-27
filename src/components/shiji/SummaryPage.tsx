@@ -157,51 +157,57 @@ export function SummaryPage() {
       ? `${ymd(date)} 所在周`
       : `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 
-  const calendarPopover = (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button
-          className="flex items-center justify-center bg-transparent p-1.5"
-          style={{ color: "oklch(0.45 0.07 145)" }}
-          aria-label="日历"
-        >
-          <CalendarIcon className="h-5 w-5" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="end">
-        {range === "month" ? (
-          <MonthYearPicker value={date} onChange={setDate} />
-        ) : (
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={(d) => {
-              if (!d) return;
-              if (range === "week") {
-                const r = new Date(d);
-                const day = (r.getDay() + 6) % 7;
-                r.setDate(r.getDate() - day);
-                setDate(r);
-              } else {
-                setDate(d);
+  const headerControls = (
+    <div className="flex items-center gap-0.5">
+      <DualLeafToggle
+        mode={mode}
+        onToggle={() => setMode((m) => (m === "timeline" ? "summary" : "timeline"))}
+      />
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            className="flex items-center justify-center bg-transparent p-1.5"
+            style={{ color: "oklch(0.45 0.07 145)" }}
+            aria-label="日历"
+          >
+            <CalendarIcon className="h-5 w-5" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="end">
+          {mode === "summary" && range === "month" ? (
+            <MonthYearPicker value={date} onChange={setDate} />
+          ) : (
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(d) => {
+                if (!d) return;
+                if (mode === "summary" && range === "week") {
+                  const r = new Date(d);
+                  const day = (r.getDay() + 6) % 7;
+                  r.setDate(r.getDate() - day);
+                  setDate(r);
+                } else {
+                  setDate(d);
+                }
+              }}
+              showWeekNumber={mode === "summary" && range === "week"}
+              modifiers={
+                mode === "summary" && range === "week"
+                  ? { inweek: (d) => inRange(d, date, "week") }
+                  : undefined
               }
-            }}
-            showWeekNumber={range === "week"}
-            modifiers={
-              range === "week"
-                ? { inweek: (d) => inRange(d, date, "week") }
-                : undefined
-            }
-            modifiersClassNames={
-              range === "week"
-                ? { inweek: "bg-primary/30 rounded-none" }
-                : undefined
-            }
-            className={cn("p-3 pointer-events-auto")}
-          />
-        )}
-      </PopoverContent>
-    </Popover>
+              modifiersClassNames={
+                mode === "summary" && range === "week"
+                  ? { inweek: "bg-primary/30 rounded-none" }
+                  : undefined
+              }
+              className={cn("p-3 pointer-events-auto")}
+            />
+          )}
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 
   const [headerSlot, setHeaderSlot] = useState<HTMLElement | null>(null);
