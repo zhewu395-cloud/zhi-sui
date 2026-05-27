@@ -265,10 +265,17 @@ function BurstGroup({ burst }: { burst: Burst }) {
   const arr = Array.from({ length: count });
   return (
     <>
-      {!burst.full && <Halo x={burst.x} y={burst.y} />}
+      {!burst.full && !burst.quick && <Halo x={burst.x} y={burst.y} />}
       {arr.map((_, i) => (
-        <Particle key={i} x={burst.x} y={burst.y} full={burst.full} />
+        <Particle
+          key={i}
+          x={burst.x}
+          y={burst.y}
+          full={burst.full}
+          quick={burst.quick}
+        />
       ))}
     </>
   );
 }
+
