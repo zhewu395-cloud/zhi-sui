@@ -18,6 +18,55 @@ import { getAll, type TimeEntry } from "@/lib/db";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { TimelineView } from "./TimelineView";
+
+/** 双叶切换：左叶亮=时间线，右叶亮=常规总结 */
+function DualLeafToggle({
+  mode,
+  onToggle,
+}: {
+  mode: "timeline" | "summary";
+  onToggle: () => void;
+}) {
+  const FILL = "oklch(0.58 0.10 142)";
+  const STROKE = "oklch(0.48 0.09 145)";
+  const leftActive = mode === "timeline";
+  return (
+    <button
+      onClick={onToggle}
+      aria-label="切换时间线/总结"
+      className="p-1.5 active:scale-90 transition"
+    >
+      <svg viewBox="0 0 28 22" className="h-5 w-7" fill="none">
+        {/* 左叶 */}
+        <path
+          d="M13.6 11 C 10 4, 4.5 3, 1.8 5.4 C 3.6 9.6, 8 12.4, 13.6 11 Z"
+          fill={leftActive ? FILL : "transparent"}
+          fillOpacity={leftActive ? 0.85 : 0}
+          stroke={STROKE}
+          strokeWidth="1"
+          strokeLinejoin="round"
+        />
+        {/* 右叶 */}
+        <path
+          d="M14.4 11 C 18 4, 23.5 3, 26.2 5.4 C 24.4 9.6, 20 12.4, 14.4 11 Z"
+          fill={!leftActive ? FILL : "transparent"}
+          fillOpacity={!leftActive ? 0.85 : 0}
+          stroke={STROKE}
+          strokeWidth="1"
+          strokeLinejoin="round"
+        />
+        {/* 茎 */}
+        <path
+          d="M14 11 L 14 19"
+          stroke={STROKE}
+          strokeWidth="1"
+          strokeLinecap="round"
+        />
+      </svg>
+    </button>
+  );
+}
 
 const GREENS = [
   "oklch(0.57 0.10 142)",
@@ -68,6 +117,7 @@ export function SummaryPage() {
   const [date, setDate] = useState<Date>(new Date());
   const [range, setRange] = useState<Range>("day");
   const [view, setView] = useState<"grid" | "line">("grid");
+  const [mode, setMode] = useState<"timeline" | "summary">("timeline");
 
   useEffect(() => {
     getAll<TimeEntry>("entries").then(setEntries);
@@ -107,51 +157,57 @@ export function SummaryPage() {
       ? `${ymd(date)} 所在周`
       : `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 
-  const calendarPopover = (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button
-          className="flex items-center justify-center bg-transparent p-1.5"
-          style={{ color: "oklch(0.45 0.07 145)" }}
-          aria-label="日历"
-        >
-          <CalendarIcon className="h-5 w-5" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="end">
-        {range === "month" ? (
-          <MonthYearPicker value={date} onChange={setDate} />
-        ) : (
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={(d) => {
-              if (!d) return;
-              if (range === "week") {
-                const r = new Date(d);
-                const day = (r.getDay() + 6) % 7;
-                r.setDate(r.getDate() - day);
-                setDate(r);
-              } else {
-                setDate(d);
+  const headerControls = (
+    <div className="flex items-center gap-0.5">
+      <DualLeafToggle
+        mode={mode}
+        onToggle={() => setMode((m) => (m === "timeline" ? "summary" : "timeline"))}
+      />
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            className="flex items-center justify-center bg-transparent p-1.5"
+            style={{ color: "oklch(0.45 0.07 145)" }}
+            aria-label="日历"
+          >
+            <CalendarIcon className="h-5 w-5" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="end">
+          {mode === "summary" && range === "month" ? (
+            <MonthYearPicker value={date} onChange={setDate} />
+          ) : (
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(d) => {
+                if (!d) return;
+                if (mode === "summary" && range === "week") {
+                  const r = new Date(d);
+                  const day = (r.getDay() + 6) % 7;
+                  r.setDate(r.getDate() - day);
+                  setDate(r);
+                } else {
+                  setDate(d);
+                }
+              }}
+              showWeekNumber={mode === "summary" && range === "week"}
+              modifiers={
+                mode === "summary" && range === "week"
+                  ? { inweek: (d) => inRange(d, date, "week") }
+                  : undefined
               }
-            }}
-            showWeekNumber={range === "week"}
-            modifiers={
-              range === "week"
-                ? { inweek: (d) => inRange(d, date, "week") }
-                : undefined
-            }
-            modifiersClassNames={
-              range === "week"
-                ? { inweek: "bg-primary/30 rounded-none" }
-                : undefined
-            }
-            className={cn("p-3 pointer-events-auto")}
-          />
-        )}
-      </PopoverContent>
-    </Popover>
+              modifiersClassNames={
+                mode === "summary" && range === "week"
+                  ? { inweek: "bg-primary/30 rounded-none" }
+                  : undefined
+              }
+              className={cn("p-3 pointer-events-auto")}
+            />
+          )}
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 
   const [headerSlot, setHeaderSlot] = useState<HTMLElement | null>(null);
@@ -161,34 +217,47 @@ export function SummaryPage() {
 
   return (
     <div className="flex flex-col -mx-4 -mb-28" style={{ height: "calc(100% + 7rem)" }}>
-      {headerSlot && createPortal(calendarPopover, headerSlot)}
+      {headerSlot && createPortal(headerControls, headerSlot)}
 
-      {/* 固定头部：日期 + 维度切换。不滚动、不透明、不毛玻璃 */}
-      <div className="shrink-0 px-4 pt-2 pb-2">
-        <div className="px-1 pb-2 text-sm text-foreground/70">
-          {rangeLabel}
-        </div>
-        <div className="flex w-full items-center gap-2">
-          {(
-            [
-              ["day", "日总结"],
-              ["week", "周总结"],
-              ["month", "月总结"],
-            ] as [Range, string][]
-          ).map(([k, l]) => (
-            <button
-              key={k}
-              onClick={() => setRange(k)}
-              className={`btn-jade btn-jade-soft ${range === k ? "btn-jade-text-active" : ""} flex-1 rounded-full px-4 py-2.5 text-base transition`}
-            >
-              {l}
-            </button>
-          ))}
-        </div>
-      </div>
+      {mode === "timeline" ? (
+        <>
+          <div className="shrink-0 px-4 pt-2 pb-1">
+            <div className="px-1 text-sm text-foreground/70">
+              {ymd(date)} · 时间线
+            </div>
+          </div>
+          <div className="flex-1 min-h-0 overflow-y-auto pb-32">
+            <TimelineView date={date} />
+          </div>
+        </>
+      ) : (
+        <>
+          {/* 固定头部：日期 + 维度切换。不滚动、不透明、不毛玻璃 */}
+          <div className="shrink-0 px-4 pt-2 pb-2">
+            <div className="px-1 pb-2 text-sm text-foreground/70">
+              {rangeLabel}
+            </div>
+            <div className="flex w-full items-center gap-2">
+              {(
+                [
+                  ["day", "日总结"],
+                  ["week", "周总结"],
+                  ["month", "月总结"],
+                ] as [Range, string][]
+              ).map(([k, l]) => (
+                <button
+                  key={k}
+                  onClick={() => setRange(k)}
+                  className={`btn-jade btn-jade-soft ${range === k ? "btn-jade-text-active" : ""} flex-1 rounded-full px-4 py-2.5 text-base transition`}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
 
-      {/* 滚动区：内容在按钮正下方截断，下方完整接轨标签栏 */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 pt-3 pb-32 space-y-5">
+          {/* 滚动区：内容在按钮正下方截断，下方完整接轨标签栏 */}
+          <div className="flex-1 min-h-0 overflow-y-auto px-4 pt-3 pb-32 space-y-5">
 
       {merged.length === 0 ? (
         <div className="mt-20 text-center text-foreground/50 text-sm">
@@ -353,7 +422,9 @@ export function SummaryPage() {
           </section>
         </>
       )}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
