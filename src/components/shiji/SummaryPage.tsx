@@ -18,6 +18,55 @@ import { getAll, type TimeEntry } from "@/lib/db";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { TimelineView } from "./TimelineView";
+
+/** 双叶切换：左叶亮=时间线，右叶亮=常规总结 */
+function DualLeafToggle({
+  mode,
+  onToggle,
+}: {
+  mode: "timeline" | "summary";
+  onToggle: () => void;
+}) {
+  const FILL = "oklch(0.58 0.10 142)";
+  const STROKE = "oklch(0.48 0.09 145)";
+  const leftActive = mode === "timeline";
+  return (
+    <button
+      onClick={onToggle}
+      aria-label="切换时间线/总结"
+      className="p-1.5 active:scale-90 transition"
+    >
+      <svg viewBox="0 0 28 22" className="h-5 w-7" fill="none">
+        {/* 左叶 */}
+        <path
+          d="M13.6 11 C 10 4, 4.5 3, 1.8 5.4 C 3.6 9.6, 8 12.4, 13.6 11 Z"
+          fill={leftActive ? FILL : "transparent"}
+          fillOpacity={leftActive ? 0.85 : 0}
+          stroke={STROKE}
+          strokeWidth="1"
+          strokeLinejoin="round"
+        />
+        {/* 右叶 */}
+        <path
+          d="M14.4 11 C 18 4, 23.5 3, 26.2 5.4 C 24.4 9.6, 20 12.4, 14.4 11 Z"
+          fill={!leftActive ? FILL : "transparent"}
+          fillOpacity={!leftActive ? 0.85 : 0}
+          stroke={STROKE}
+          strokeWidth="1"
+          strokeLinejoin="round"
+        />
+        {/* 茎 */}
+        <path
+          d="M14 11 L 14 19"
+          stroke={STROKE}
+          strokeWidth="1"
+          strokeLinecap="round"
+        />
+      </svg>
+    </button>
+  );
+}
 
 const GREENS = [
   "oklch(0.57 0.10 142)",
