@@ -109,10 +109,10 @@ export function TimelineView({ date }: { date: Date }) {
           {date.getFullYear()}-{pad(date.getMonth() + 1)}-{pad(date.getDate())}
         </span>
         <span
-          ref={titleRef}
           className="text-base font-medium tracking-wide"
         >
-          时间线
+          时间
+          <span ref={lastCharRef}>线</span>
         </span>
       </div>
 
