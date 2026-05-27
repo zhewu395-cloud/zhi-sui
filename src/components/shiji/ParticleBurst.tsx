@@ -216,8 +216,8 @@ export function ParticleLayer() {
     _emit = (b) => {
       const id = ++_id;
       setBursts((prev) => [...prev, { ...b, id }]);
-      // quick 模式生命周期短，及时销毁
-      const ttl = b.quick ? 1300 : 2600;
+      // 生命周期：到达最大半径后立即销毁
+      const ttl = b.quick ? 900 : b.full ? 1400 : 1100;
       window.setTimeout(
         () => setBursts((prev) => prev.filter((x) => x.id !== id)),
         ttl,
