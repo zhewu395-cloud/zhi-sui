@@ -5,6 +5,7 @@ type Burst = {
   x: number; // 0..1 屏幕比例
   y: number;
   full?: boolean;
+  quick?: boolean; // 短生命周期（满卡多点联动）
 };
 
 let _id = 0;
@@ -12,6 +13,27 @@ let _emit: ((b: Omit<Burst, "id">) => void) | null = null;
 
 export function fireBurst(b: Omit<Burst, "id">) {
   _emit?.(b);
+}
+
+// 满卡：在 50ms 内触发 3 个独立小爆炸，覆盖屏幕不同象限
+export function fireFullScreenCelebration() {
+  // 三象限随机点：偏左上 / 偏中右 / 偏下
+  const zones: Array<[number, number, number, number]> = [
+    [0.12, 0.42, 0.12, 0.4],
+    [0.55, 0.85, 0.32, 0.6],
+    [0.2, 0.75, 0.62, 0.88],
+  ];
+  // 随机打乱顺序，进一步降低规律性
+  const shuffled = zones
+    .map((z) => ({ z, r: Math.random() }))
+    .sort((a, b) => a.r - b.r)
+    .map((o) => o.z);
+  shuffled.forEach(([xMin, xMax, yMin, yMax], i) => {
+    const x = xMin + Math.random() * (xMax - xMin);
+    const y = yMin + Math.random() * (yMax - yMin);
+    const delay = Math.random() * 50; // 0~50ms 微错峰
+    window.setTimeout(() => _emit?.({ x, y, quick: true }), delay + i * 8);
+  });
 }
 
 function rand(a: number, b: number) {
@@ -55,10 +77,12 @@ function Particle({
   x,
   y,
   full,
+  quick,
 }: {
   x: number;
   y: number;
   full?: boolean;
+  quick?: boolean;
 }) {
   const vw = typeof window !== "undefined" ? window.innerWidth : 400;
   const vh = typeof window !== "undefined" ? window.innerHeight : 700;
@@ -74,17 +98,30 @@ function Particle({
 
   // 单次：横向满屏、纵向 ~1/3，且整体偏下（瓢洒下落感）
   const angle = rand(0, Math.PI * 2);
-  const rx = full ? vw * rand(0.4, 0.55) : (vw / 2) * rand(0.55, 1.05);
-  const ry = full ? vh * rand(0.4, 0.55) : (vh / 3) * rand(0.45, 0.95);
+  const rx = full
+    ? vw * rand(0.4, 0.55)
+    : quick
+      ? (vw / 2) * rand(0.6, 1.1)
+      : (vw / 2) * rand(0.55, 1.05);
+  const ry = full
+    ? vh * rand(0.4, 0.55)
+    : quick
+      ? (vh / 3) * rand(0.55, 1.05)
+      : (vh / 3) * rand(0.45, 0.95);
   const jitter = rand(0.5, 1.35);
   const dx = Math.cos(angle) * rx * jitter;
   const dyBase = Math.sin(angle) * ry * jitter;
-  // 引入向下偏置，模拟落叶
-  const gravity = full ? 0 : rand(20, 80);
+  // 引入向下偏置，模拟落叶；quick 模式不下坠
+  const gravity = full || quick ? 0 : rand(20, 80);
   const dy = dyBase + gravity;
 
-  const dur = full ? rand(1.6, 1.9) : rand(1.0, 1.7);
+  const dur = quick
+    ? rand(0.8, 1.2)
+    : full
+      ? rand(1.6, 1.9)
+      : rand(1.0, 1.7);
   const delay = full ? rand(0, 0.03) : 0;
+
 
 
   let w = 12;
@@ -178,15 +215,18 @@ export function ParticleLayer() {
     _emit = (b) => {
       const id = ++_id;
       setBursts((prev) => [...prev, { ...b, id }]);
+      // quick 模式生命周期短，及时销毁
+      const ttl = b.quick ? 1300 : 2600;
       window.setTimeout(
         () => setBursts((prev) => prev.filter((x) => x.id !== id)),
-        2600,
+        ttl,
       );
     };
     return () => {
       _emit = null;
     };
   }, []);
+
 
   return (
     <>
@@ -225,10 +265,17 @@ function BurstGroup({ burst }: { burst: Burst }) {
   const arr = Array.from({ length: count });
   return (
     <>
-      {!burst.full && <Halo x={burst.x} y={burst.y} />}
+      {!burst.full && !burst.quick && <Halo x={burst.x} y={burst.y} />}
       {arr.map((_, i) => (
-        <Particle key={i} x={burst.x} y={burst.y} full={burst.full} />
+        <Particle
+          key={i}
+          x={burst.x}
+          y={burst.y}
+          full={burst.full}
+          quick={burst.quick}
+        />
       ))}
     </>
   );
 }
+

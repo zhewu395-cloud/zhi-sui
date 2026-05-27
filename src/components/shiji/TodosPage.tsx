@@ -4,7 +4,7 @@ import { getAll, put, del, uid, type Todo } from "@/lib/db";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { fireBurst, ParticleLayer } from "./ParticleBurst";
+import { fireBurst, fireFullScreenCelebration, ParticleLayer } from "./ParticleBurst";
 
 const today = () => {
   const d = new Date();
@@ -117,7 +117,7 @@ export function TodosPage() {
       const willAllDone = todayItems.every((x) => x.id === t.id || x.done);
       if (t.date === todayStr && willAllDone && todayItems.length > 0) {
         window.setTimeout(() => {
-          fireBurst({ x: 0.5, y: 0.45, full: true });
+          fireFullScreenCelebration();
         }, 200);
       }
     } else {
