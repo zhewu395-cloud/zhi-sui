@@ -167,6 +167,7 @@ export function TimelineView({ date }: { date: Date }) {
                       left: axisLeft,
                       top: `${TIME_FS * 0.55}px`,
                       transform: "translate(-50%, -50%)",
+                      zIndex: 10,
                       width: "0.36rem",
                       height: "0.36rem",
                       background: dotInner,
