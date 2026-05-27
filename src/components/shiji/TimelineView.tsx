@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { getAll, type TimeEntry } from "@/lib/db";
 
 function pad(n: number) {
@@ -33,11 +33,35 @@ type Node = {
   duration: number;
 };
 
+// 统一深柳绿（与软件文字色一致）
+const TEXT_COLOR = "oklch(0.32 0.06 145)";
+const MUTED_COLOR = "oklch(0.40 0.05 145 / 0.72)";
+
 export function TimelineView({ date }: { date: Date }) {
   const [entries, setEntries] = useState<TimeEntry[]>([]);
+  const titleRef = useRef<HTMLSpanElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [axisLeft, setAxisLeft] = useState(120);
 
   useEffect(() => {
     getAll<TimeEntry>("entries").then(setEntries);
+  }, []);
+
+  useLayoutEffect(() => {
+    function measure() {
+      if (!titleRef.current || !wrapRef.current) return;
+      const t = titleRef.current.getBoundingClientRect();
+      const w = wrapRef.current.getBoundingClientRect();
+      setAxisLeft(t.right - w.left);
+    }
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (wrapRef.current) ro.observe(wrapRef.current);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
   }, []);
 
   const nodes = useMemo<Node[]>(() => {
@@ -65,82 +89,133 @@ export function TimelineView({ date }: { date: Date }) {
     return list.sort((a, b) => a.ts - b.ts);
   }, [entries, date]);
 
-  if (nodes.length === 0) {
-    return (
-      <div className="mt-24 text-center text-foreground/50 text-sm">
-        这一天还没有留下脚印
-      </div>
-    );
-  }
+  // 1.3x 尺寸
+  const TIME_FS = 20; // 15.5 * 1.3
+  const EVENT_FS = 21; // 16.5 * 1.3
+  const DUR_FS = 16; // 12.5 * 1.3
+  const LINE_W = 1.5;
+  const GAP_LEFT = 12; // 线左侧到时间数字的间距
+  const GAP_RIGHT = 18; // 线右侧到事件文字的间距
 
   return (
-    <div className="relative pl-24 pr-4 pt-3 pb-8">
-      {/* 时间轴细线 */}
+    <div ref={wrapRef} className="relative px-4 pt-3 pb-8">
+      {/* 顶部标题 */}
       <div
-        className="absolute top-3 bottom-8"
-        style={{
-          left: "5.4rem",
-          width: "1px",
-          background:
-            "linear-gradient(180deg, oklch(0.55 0.07 145 / 0) 0%, oklch(0.55 0.07 145 / 0.35) 8%, oklch(0.55 0.07 145 / 0.35) 92%, oklch(0.55 0.07 145 / 0) 100%)",
-        }}
-      />
-      <ul className="space-y-4">
-        {nodes.map((n) => {
-          const isStart = n.kind === "start";
-          const dotColor = isStart
-            ? "oklch(0.82 0.10 145)" // 浅绿
-            : "oklch(0.45 0.10 145)"; // 深绿
-          const labelColor = isStart
-            ? "oklch(0.50 0.08 145)"
-            : "oklch(0.32 0.06 145)";
-          return (
-            <li key={n.key} className="relative min-h-[2.2rem]">
-              {/* 节点 */}
-              <span
-                className="absolute -left-[1.85rem] top-[0.55rem] block h-[0.6rem] w-[0.6rem] rounded-full"
-                style={{
-                  background: dotColor,
-                  boxShadow: "0 0 0 3px oklch(0.96 0.022 140 / 0.9)",
-                }}
-              />
-              {/* 时间标签：在轴左侧 */}
-              <div
-                className="absolute -left-[6.2rem] top-0 w-[4.2rem] text-right leading-tight"
-                style={{ color: "oklch(0.40 0.06 145)" }}
-              >
-                <div className="text-[15.5px] tabular-nums font-medium">
-                  {hm(n.ts)}
-                </div>
-              </div>
-              {/* 右侧文本 */}
-              <div className="pt-0.5">
-                <div
-                  className="text-[16.5px] leading-snug"
-                  style={{ color: labelColor, fontWeight: isStart ? 500 : 600 }}
+        className="mb-4 flex items-baseline gap-3"
+        style={{ color: TEXT_COLOR }}
+      >
+        <span className="text-sm" style={{ color: MUTED_COLOR }}>
+          {date.getFullYear()}-{pad(date.getMonth() + 1)}-{pad(date.getDate())}
+        </span>
+        <span
+          ref={titleRef}
+          className="text-base font-medium tracking-wide"
+        >
+          时间线
+        </span>
+      </div>
+
+      {nodes.length === 0 ? (
+        <div className="mt-20 text-center text-foreground/50 text-sm">
+          这一天还没有留下脚印
+        </div>
+      ) : (
+        <>
+          {/* 时间轴细线：垂直落在“线”字右下方 */}
+          <div
+            className="absolute"
+            style={{
+              left: axisLeft - LINE_W / 2,
+              top: "4.2rem",
+              bottom: "2rem",
+              width: LINE_W,
+              background:
+                "linear-gradient(180deg, oklch(0.55 0.07 145 / 0) 0%, oklch(0.5 0.07 145 / 0.4) 8%, oklch(0.5 0.07 145 / 0.4) 92%, oklch(0.55 0.07 145 / 0) 100%)",
+            }}
+          />
+          <ul className="relative space-y-5">
+            {nodes.map((n) => {
+              const isStart = n.kind === "start";
+              // 圆点：毛玻璃 + 内侧色彩区分
+              const dotInner = isStart
+                ? "oklch(0.82 0.10 145 / 0.55)"
+                : "oklch(0.42 0.10 145 / 0.55)";
+              return (
+                <li
+                  key={n.key}
+                  className="relative"
+                  style={{ minHeight: `${EVENT_FS * 1.6}px` }}
                 >
-                  {n.name}
-                  <span
-                    className="mx-1 opacity-60"
-                    style={{ fontWeight: 400 }}
-                  >
-                    ·
-                  </span>
-                  <span>{isStart ? "始" : "终"}</span>
-                </div>
-                {!isStart && (
+                  {/* 时间（轴左） */}
                   <div
-                    className="mt-0.5 text-[12.5px] tabular-nums"
-                    style={{ color: "oklch(0.50 0.04 145 / 0.78)" }}
+                    className="absolute top-0 text-right leading-tight tabular-nums"
+                    style={{
+                      right: `calc(100% - ${axisLeft - GAP_LEFT}px)`,
+                      width: "4.6rem",
+                      color: TEXT_COLOR,
+                      fontSize: `${TIME_FS}px`,
+                      fontWeight: 500,
+                    }}
                   >
-                    历时 {fmtDur(n.duration)}
+                    {hm(n.ts)}
                   </div>
-                )}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+                  {/* 毛玻璃圆点（叠在线上） */}
+                  <span
+                    className="absolute rounded-full"
+                    style={{
+                      left: axisLeft,
+                      top: `${TIME_FS * 0.55}px`,
+                      transform: "translate(-50%, -50%)",
+                      width: "0.62rem",
+                      height: "0.62rem",
+                      background: dotInner,
+                      border: "1px solid oklch(0.5 0.07 145 / 0.45)",
+                      backdropFilter: "blur(4px)",
+                      WebkitBackdropFilter: "blur(4px)",
+                      boxShadow:
+                        "0 0 0 3px oklch(0.96 0.022 140 / 0.85), 0 1px 2px oklch(0.3 0.05 145 / 0.15)",
+                    }}
+                  />
+                  {/* 事件（轴右） */}
+                  <div
+                    className="absolute top-0"
+                    style={{
+                      left: axisLeft + GAP_RIGHT,
+                      right: 0,
+                      color: TEXT_COLOR,
+                    }}
+                  >
+                    <div
+                      className="leading-snug"
+                      style={{
+                        fontSize: `${EVENT_FS}px`,
+                        fontWeight: isStart ? 500 : 600,
+                      }}
+                    >
+                      {n.name}
+                      <span className="mx-1 opacity-55" style={{ fontWeight: 400 }}>
+                        ·
+                      </span>
+                      <span>{isStart ? "始" : "终"}</span>
+                    </div>
+                    {!isStart && (
+                      <div
+                        className="mt-0.5 tabular-nums"
+                        style={{
+                          fontSize: `${DUR_FS}px`,
+                          color: MUTED_COLOR,
+                        }}
+                      >
+                        历时 {fmtDur(n.duration)}
+                      </div>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
     </div>
   );
 }
