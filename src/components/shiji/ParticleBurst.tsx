@@ -215,15 +215,18 @@ export function ParticleLayer() {
     _emit = (b) => {
       const id = ++_id;
       setBursts((prev) => [...prev, { ...b, id }]);
+      // quick 模式生命周期短，及时销毁
+      const ttl = b.quick ? 1300 : 2600;
       window.setTimeout(
         () => setBursts((prev) => prev.filter((x) => x.id !== id)),
-        2600,
+        ttl,
       );
     };
     return () => {
       _emit = null;
     };
   }, []);
+
 
   return (
     <>
