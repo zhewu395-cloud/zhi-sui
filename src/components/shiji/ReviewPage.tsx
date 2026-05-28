@@ -238,6 +238,7 @@ export function ReviewPage() {
         {!longSplit ? (
           <HDropZone
             label="长复盘"
+            cat="long"
             active={hoverCat === "long" && !!draggingId}
             onClick={() => {
               setLongView("week");
