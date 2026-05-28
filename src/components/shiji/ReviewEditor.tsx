@@ -8,7 +8,6 @@ import {
   Image as ImageIcon,
   Plus,
   Calendar as CalendarIcon,
-  X,
   Minus,
 } from "lucide-react";
 import { LeafBack } from "./LeafBack";
