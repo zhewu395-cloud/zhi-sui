@@ -191,8 +191,11 @@ export function ReviewEditor({
     const a = document.createElement("a");
     a.href = `#review-${target.id}`;
     a.dataset.linkId = target.id;
-    a.className = "text-primary underline";
-    a.textContent = `🔗 ${target.title || target.date}（${CAT_LABEL[target.category]}）`;
+    // 主题淡柳绿 + 无下划线，与正文明显区分
+    a.style.color = "oklch(0.58 0.10 145)";
+    a.style.textDecoration = "none";
+    a.style.cursor = "pointer";
+    a.textContent = `@${target.title?.trim() || target.date}`;
     const sel = window.getSelection();
     if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.anchorNode)) {
       sel.getRangeAt(0).insertNode(a);
@@ -208,6 +211,23 @@ export function ReviewEditor({
     put("reviews", next);
     onSave(next);
     setPanel(null);
+  };
+
+  // 点击正文中的 @链接 跳转到目标复盘
+  const onEditorClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    const a = target.closest<HTMLAnchorElement>("a[data-link-id]");
+    if (!a) return;
+    e.preventDefault();
+    const id = a.dataset.linkId;
+    if (!id || !onOpenReview) return;
+    // 先保存当前内容
+    const html = editorRef.current?.innerHTML ?? "";
+    const cur = { ...draft, content: html, updatedAt: Date.now() };
+    put("reviews", cur).then(() => {
+      onSave(cur);
+      onOpenReview(id);
+    });
   };
 
   const filteredLinkTargets =
