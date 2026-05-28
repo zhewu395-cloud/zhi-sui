@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { activateCode, readVipState, type VipState } from "@/lib/activation";
 
-// 占位购买链接 —— 后续替换为正式链接
-const BUY_WEEK_URL = "";
-const BUY_LIFETIME_URL = "";
-
 function formatExpire(ts: number) {
   const d = new Date(ts);
   const p = (n: number) => String(n).padStart(2, "0");
