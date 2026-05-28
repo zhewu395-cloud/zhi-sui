@@ -100,6 +100,19 @@ export function ReviewPage() {
     setList((prev) => prev.filter((x) => x.id !== id));
   };
 
+  // 跳转到指定复盘（用于正文里的 @链接）
+  const openReviewById = async (id: string) => {
+    const rows = await getAll<Review>("reviews");
+    const tgt = rows.find((x) => x.id === id);
+    if (!tgt) return;
+    const fixed = { ...tgt, category: (tgt.category ?? tgt.type ?? "pending") as ReviewCategory };
+    setList(
+      rows.map((r) => ({ ...r, category: (r.category ?? r.type ?? "pending") as ReviewCategory })),
+    );
+    setEditing(fixed);
+  };
+
+
   // ===== 长复盘视图 =====
   if (openCat === "long" || openCat === "week" || openCat === "month") {
     const cat = openCat === "long" ? longView : openCat;
