@@ -139,6 +139,7 @@ export function ReviewPage() {
               load();
             }}
             onSave={onSave}
+            onOpenReview={(id) => openReviewById(id)}
           />
         )}
       </div>
@@ -166,6 +167,7 @@ export function ReviewPage() {
               load();
             }}
             onSave={onSave}
+            onOpenReview={(id) => openReviewById(id)}
           />
         )}
       </div>
