@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import { activateCode, readVipState, type VipState } from "@/lib/activation";
 
-function formatExpire(ts: number) {
-  const d = new Date(ts);
-  const p = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-}
 
 export function ActivationGate({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<VipState | null>(null);
