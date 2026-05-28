@@ -307,6 +307,7 @@ export function ReviewEditor({
           onMouseUp={saveSelection}
           onKeyUp={saveSelection}
           onTouchEnd={saveSelection}
+          onClick={onEditorClick}
           className="min-h-[60vh] outline-none text-base leading-7 caret-[oklch(0.78_0.18_95)]"
           style={{ fontFamily, fontSize: `${fontSize}px` }}
         />
